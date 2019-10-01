@@ -226,44 +226,13 @@
 
                     <li class="has-submenu">
                         <a href="#">
-                            <i class="remixicon-stack-line"></i>Apps <div class="arrow-down"></div>
+                            <i class="remixicon-stack-line"></i>คำสั่งซื้อ <div class="arrow-down"></div>
                         </a>
                         <ul class="submenu">
                             <li>
-                                <a href="apps-kanbanboard.html">Kanban Board</a>
+                                <?=$this->Html->link('คำสั่งซื้อทั้งหมด',['controller'=>'order'])?>
                             </li>
-                            <li>
-                                <a href="apps-companies.html">Companies</a>
-                            </li>
-                            <li>
-                                <a href="apps-calendar.html">Calendar</a>
-                            </li>
-                            <li>
-                                <a href="apps-filemanager.html">File Manager</a>
-                            </li>
-                            <li>
-                                <a href="apps-tickets.html">Tickets</a>
-                            </li>
-                            <li>
-                                <a href="apps-team.html">Team Members</a>
-                            </li>
-                            <li class="has-submenu">
-                                <a href="#">Email <div class="arrow-down"></div></a>
-                                <ul class="submenu">
-                                    <li>
-                                        <a href="email-inbox.html">Inbox</a>
-                                    </li>
-                                    <li>
-                                        <a href="email-read.html">Read Email</a>
-                                    </li>
-                                    <li>
-                                        <a href="email-compose.html">Compose Email</a>
-                                    </li>
-                                    <li>
-                                        <a href="email-templates.html">Email Templates</a>
-                                    </li>
-                                </ul>
-                            </li>
+                            
                         </ul>
                     </li>
 
