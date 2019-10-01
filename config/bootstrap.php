@@ -19,6 +19,15 @@
 require __DIR__ . '/paths.php';
 
 /*
+ *
+ * Manual import 
+ */
+require __DIR__ . '/app_config.php';
+require __DIR__ . '/constants.php';
+
+
+
+/*
  * Bootstrap CakePHP.
  *
  * Does the various bits of setup that CakePHP needs to do.
