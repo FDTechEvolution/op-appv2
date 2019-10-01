@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Minton - Responsive Admin Dashboard Template</title>
+        <title>Mintonzz - Responsive Admin Dashboard Template</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Coderthemes" name="author" />
@@ -16,6 +16,7 @@
         <?=$this->Html->css('assets/css/app.min')?>
 
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </head>
 
     <body>
@@ -31,22 +32,14 @@
         <div class="wrapper">
             <div class="container-fluid">
 
-                <!-- start page title -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-title-box">
-                            <div class="page-title-right">
-                                <ol class="breadcrumb m-0">
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Minton</a></li>
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li>
-                                    <li class="breadcrumb-item active">Starter</li>
-                                </ol>
-                            </div>
-                            <h4 class="page-title">Starter</h4>
-                        </div>
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container-fluid">
+                        <?= $this->fetch('content') ?>
                     </div>
-                </div>     
-                <!-- end page title --> 
+                    <!-- end container -->
+                </div>
+                <!-- end content -->
 
 
             </div> <!-- end container -->
