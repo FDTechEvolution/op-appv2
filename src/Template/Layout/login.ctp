@@ -15,6 +15,7 @@
         <?=$this->Html->css('assets/css/icons.min')?>
         <?=$this->Html->css('assets/css/app.min')?>
 
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     </head>
 
     <body>
