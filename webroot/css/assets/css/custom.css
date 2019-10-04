@@ -1,0 +1,21 @@
+#app {
+    width: 100%;
+}
+.search-wrapper {
+    margin-bottom: 20px;
+}
+.search-orders {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+h2.header-title {
+    margin-bottom: 10px;
+}
+tr.tr-order {
+    border-bottom: 1px solid #ddd;
+}
+td.td-order {
+    padding: 10px 15px;
+}
