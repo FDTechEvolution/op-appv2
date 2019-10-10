@@ -1,5 +1,5 @@
 <div class="row">
-    <div div id="app">
+    <div id="app">
         <div class="col-md-12">
             <div class="card-box">
                 <h2 class="header-title m-t-0 m-b-30">คำสั่งซื้อทั้งหมด</h2>
