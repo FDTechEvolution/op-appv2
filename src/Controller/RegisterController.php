@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
@@ -9,22 +10,21 @@ use App\Controller\AppController;
  *
  * @method \App\Model\Entity\Register[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class RegisterController extends AppController
-{
+class RegisterController extends AppController {
+
     /**
      * Index method
      *
      * @return \Cake\Http\Response|null
      */
-    public function index()
-    {
-        $this->viewBuilder()->setLayout('register');
-    }
-
-    public function create() {
-        if($this->request->is(['post'])){
+    public function index() {
+        $this->viewBuilder()->setLayout('blank');
+        
+        if ($this->request->is(['post'])) {
             $this->RequestUrl = $this->loadComponent('RequestUrl');
-            $this->RequestUrl->postRequest('http://localhost/git/op-service/users/create/', $this->request->getData());
+            $this->RequestUrl->postRequest(APIURL.'users/create/', $this->request->getData());
         }
+        
+        
     }
 }
