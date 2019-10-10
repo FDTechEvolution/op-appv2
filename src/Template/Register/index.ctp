@@ -1,7 +1,7 @@
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6 col-xl-5">
         <div class="text-center w-75 m-auto">
-            <p class="text-muted"><img src="img/logo/logo-v2-01.png" width="300"></p>
+            <p class="text-muted"><?=$this->Html->image('logo/logo-v2-01.png',['class'=>'w-100'])?></p>
         </div>
         <div class="card">
             <div class="card-body p-4">

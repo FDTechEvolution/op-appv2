@@ -66,7 +66,7 @@ class RequestUrlComponent extends Component {
         curl_close($ch);
 
         // do anything you want with your response
-        var_dump($response);
+        //var_dump($response);
 
 
 

@@ -27,6 +27,11 @@
         .unactive{ border-color: #dd0000; }
     </style>
     <body>
+        <div id="preloader">
+            <div id="status">
+                <div class="bouncingLoader"><div ></div><div ></div><div ></div></div>
+            </div>
+        </div>
         <div id="app">
             <div class="account-pages mt-5 mb-5">
                 <div class="container">
@@ -44,7 +49,7 @@
 
         <?= $this->Html->script('/css/assets/js/vendor.min.js') ?>
 
-        <?= $this->Html->script('/css/assets/js/app.min.js') ?>
+        <?= $this->Html->script('/css/assets/js/app.js') ?>
 
     </body>
 </html>
