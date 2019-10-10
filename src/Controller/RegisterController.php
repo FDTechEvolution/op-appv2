@@ -23,8 +23,10 @@ class RegisterController extends AppController
 
     public function create() {
         if($this->request->is(['post'])){
+            $postData = $this->request->getData();
+            $this->log($postData, 'debug');
             $this->RequestUrl = $this->loadComponent('RequestUrl');
-            $this->RequestUrl->postRequest('http://localhost/git/op-service/users/create/', $this->request->getData());
+            $this->RequestUrl->postRequest('http://localhost/git/op-service/users/create/', $postData);
         }
     }
 }

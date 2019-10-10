@@ -41,7 +41,7 @@
                                     <fieldset>
                                         <div class="form-group mb-3">
                                             <label for="mobile">ชื่อ - นามสกุล</label>
-                                            <input class="form-control" type="text" name="name" id="name" required="" placeholder="ชื่อ - นามสกุล">
+                                            <input v-model="name" class="form-control" type="text" name="name" id="name" required="" placeholder="ชื่อ - นามสกุล">
                                         </div>
 
                                         <div class="form-group mb-3">
@@ -67,7 +67,7 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        
+                                        {{mobileduplicate}}
                                         <div class="form-group mb-0 text-center">
                                             <button class="btn btn-primary btn-block" type="submit"> ลงทะเบียน </button>
                                         </div>
@@ -88,11 +88,12 @@
     </div>
 
 <script>
-    const apiUrl = 'http://localhost/git/op-service/'
+    const apiUrl = 'https://orderpang-service.herokuapp.com'
     new Vue({
         el: '#frmregis',
         data () {
             return {
+                name: null,
                 mobile: null,
                 mobileduplicate: null,
                 password: null,
@@ -108,9 +109,25 @@
 
         },
         methods: {
-            checkForm: async function (e) {
-                await this.checkmobile()
-                await this.checkpassword()
+            checkForm: function (e) {
+                this.checkmobile()
+                if(this.password.length < 6){
+                    this.passshort = 'รหัสผ่านต้องมีจำนวน 6 ตัวขึ้นไป'
+                    this.passwordclass = true
+                }else{
+                    if (this.password != this.confirmpassword) {
+                        this.passerror = 'รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบ!'
+                        this.passwordclass = true
+                    }else{
+                        this.passerror = null
+                        this.passwordclass = false
+                        if(this.mobileduplicate == null){
+                            return true
+                        }
+                    }
+                    this.passshort = null
+                    this.passwordclass = false
+                }
                 e.preventDefault();
             },
             checkmobile () {
@@ -138,12 +155,19 @@
                         this.passerror = null
                         this.passwordclass = false
                         if(this.mobileduplicate == null){
-                            return true
+                            this.userCreate()
                         }
                     }
                     this.passshort = null
                     this.passwordclass = false
                 }
+            },
+            userCreate () {
+                axios.post(apiUrl + 'users/create', {
+                    name: this.name,
+                    mobile: this.mobile,
+                    password: this.password
+                })
             }
         }
     })
