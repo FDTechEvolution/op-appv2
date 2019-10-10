@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
@@ -9,24 +10,29 @@ use App\Controller\AppController;
  *
  * @method \App\Model\Entity\Register[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class RegisterController extends AppController
-{
+class RegisterController extends AppController {
+
     /**
      * Index method
      *
      * @return \Cake\Http\Response|null
      */
-    public function index()
-    {
-        $this->viewBuilder()->setLayout('register');
-    }
+    public function index() {
+        $this->viewBuilder()->setLayout('blank');
 
-    public function create() {
-        if($this->request->is(['post'])){
-            $postData = $this->request->getData();
-            $this->log($postData, 'debug');
+        if ($this->request->is(['post'])) {
             $this->RequestUrl = $this->loadComponent('RequestUrl');
-            $this->RequestUrl->postRequest('http://localhost/git/op-service/users/create/', $postData);
+            $res = $this->RequestUrl->postRequest(APIURL . 'users/create/', $this->request->getData());
+            $res = json_decode($res, true);
+
+            if ($res['result']) {
+                $userId = $res['data']['user_id'];
+                $data = ['user_id' => $userId];
+                $resSms = $this->RequestUrl->postRequest(APIURL . 'sms/create-and-send-otp-password/', $data);
+
+                return $this->redirect(['controller' => 'identify', 'action' => 'otp', $userId]);
+            }
         }
     }
+
 }

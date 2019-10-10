@@ -304,7 +304,13 @@ function ($) {
         // Preloader
         $(window).on('load', function () {
             $('#status').fadeOut();
-            $('#preloader').delay(350).fadeOut('slow');
+            $('#preloader').delay(250).fadeOut('slow');
+        });
+        
+        // document Preloader on submit
+        $(document).on('submit', function () {
+            $('#status').show();
+            $('#preloader').show();
         });
     },
 
