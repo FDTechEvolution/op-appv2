@@ -1,5 +1,7 @@
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6 col-xl-5">
+        <?= $this->Flash->render() ?>
+        
         <div class="text-center w-75 m-auto">
             <p class="text-muted">
                 
@@ -27,7 +29,7 @@
 
             </div> <!-- end card-body -->
         </div>
-        <?= $this->Flash->render() ?>
+        
     </div> <!-- end col -->
 </div>
 <script>

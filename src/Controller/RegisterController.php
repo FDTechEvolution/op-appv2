@@ -23,7 +23,6 @@ class RegisterController extends AppController {
         if ($this->request->is(['post'])) {
             $this->RequestUrl = $this->loadComponent('RequestUrl');
             $res = $this->RequestUrl->postRequest(APIURL . 'users/create/', $this->request->getData());
-            $res = json_decode($res, true);
 
             if ($res['result']) {
                 $userId = $res['data']['user_id'];

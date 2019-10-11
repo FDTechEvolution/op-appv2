@@ -24,6 +24,8 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-lg-6 col-xl-5">
+                        <?= $this->Flash->render() ?>
+                        
                         <div class="card">
 
                             <div class="card-body p-4">
@@ -53,6 +55,7 @@
                             </div> <!-- end card-body -->
                         </div>
                         <!-- end card -->
+                        
 
                     </div> <!-- end col -->
                 </div>

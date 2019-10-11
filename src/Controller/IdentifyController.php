@@ -11,25 +11,31 @@ use App\Controller\AppController;
  * @method \App\Model\Entity\Identify[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class IdentifyController extends AppController {
-    
-    public function otp($user_id = null){
+
+    public function otp($user_id = null) {
         $this->viewBuilder()->setLayout('blank');
-        if(is_null($user_id) || $user_id ==''){
-            return $this->redirect(['controller'=>'login']);
+        if (is_null($user_id) || $user_id == '') {
+            return $this->redirect(['controller' => 'login']);
         }
-        
-        $user = $this->RequestUrl->getRequest(APIURL.'users/get/'.$user_id);
-        
-        if($this->request->is(['post'])){
+
+        $user = $this->RequestUrl->getRequest(APIURL . 'users/get/' . $user_id);
+
+        if ($this->request->is(['post'])) {
             $postData = $this->request->getData();
-            if($user['otp'] == $postData['otppassword']){
-                $this->RequestUrl->postRequest(APIURL.'users/update/'.$user_id,['otp'=>'','isactive'=>'Y']);
-            }else{
+            if ($user['otp'] == $postData['otppassword']) {
+                $respon = $this->RequestUrl->postRequest(APIURL . 'users/update/' . $user_id, ['otp' => '', 'isactive' => 'Y']);
+                if (isset($respon['result']) && isset($respon['result'])) {
+                    $this->Flash->success('ยืนยันเรียบร้อยแล้ว');
+                    return $this->redirect(['controller' => 'login']);
+                }
+                
+            } else {
                 $this->Flash->error('OTP ผิดพลาด กรุณาตรวจสอบข้อมูลอีกครั้ง');
-                return $this->redirect(['controller'=>'identify','action'=>'otp',$user_id]);
+                return $this->redirect(['controller' => 'identify', 'action' => 'otp', $user_id]);
             }
         }
-       
+
         $this->set(compact('user'));
     }
+
 }

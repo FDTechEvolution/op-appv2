@@ -20,7 +20,7 @@ class RequestUrlComponent extends Component {
         ));
 
         $resp = file_get_contents($url, FALSE, $context);
-        $this->log($data, 'debug');
+        //$this->log($data, 'debug');
         $resp = json_decode($resp, true);
         return $resp;
     }
@@ -60,7 +60,7 @@ class RequestUrlComponent extends Component {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
         // execute!
-        $response = curl_exec($ch);
+        $resp = curl_exec($ch);
 
         // close the connection, release resources used
         curl_close($ch);
@@ -69,8 +69,8 @@ class RequestUrlComponent extends Component {
         //var_dump($response);
 
 
-
-        return $response;
+        $resp = json_decode($resp, true);
+        return $resp;
     }
 
 }
