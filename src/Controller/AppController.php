@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -12,6 +13,7 @@
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App\Controller;
 
 use Cake\Controller\Controller;
@@ -25,8 +27,7 @@ use Cake\Event\Event;
  *
  * @link https://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller
-{
+class AppController extends Controller {
 
     /**
      * Initialization hook method.
@@ -37,14 +38,14 @@ class AppController extends Controller
      *
      * @return void
      */
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->loadComponent('RequestHandler', [
             'enableBeforeRedirect' => false,
         ]);
         $this->loadComponent('Flash');
+        $this->loadComponent('RequestUrl');
 
         // $this->loadComponent('Auth', [
         //     'loginAction' => [
@@ -66,4 +67,5 @@ class AppController extends Controller
          */
         //$this->loadComponent('Security');
     }
+
 }

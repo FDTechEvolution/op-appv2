@@ -10,10 +10,11 @@
             <div class="card-body p-4">
                 <?= $this->Form->create('otp', ['id' => 'frm-otp', 'class' => 'form-horizontal', 'role' => 'form']) ?>
                 <fieldset>
-                  
+                    <h3>ยืนยันหมายเลขโทรศัพท์ของคุณ</h3>
+                    <p>เราได้ส่ง OTP Password ไปยังหมายเลขโทรศัพท์ ******<?= substr($user['mobile'], 6)?></p>
                     <div class="form-group mb-3">
-                        <label for="password">OTP Password</label> <div v-if="password != null" style="color: #dd0000;">{{passshort}}</div>
-                        <input v-model="password" v-bind:class="{ unactive: passwordclass }" class="form-control" type="password" name="otppassword" required="" id="otppassword" placeholder="">
+                        <label for="password">OTP Password</label> 
+                        <input v-model="password" class="form-control" type="password" name="otppassword" required="" id="otppassword" placeholder="" maxlength="6" >
                     </div>
 
                     
@@ -26,6 +27,7 @@
 
             </div> <!-- end card-body -->
         </div>
+        <?= $this->Flash->render() ?>
     </div> <!-- end col -->
 </div>
 <script>
