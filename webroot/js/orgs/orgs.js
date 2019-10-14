@@ -74,16 +74,18 @@ let orgs = new Vue ({
             })
         },
         delOrg: function (del) {
-            axios.post(apiUrl + 'orgs/delete/' + del)
-            .then(() => {
-                setTimeout(function () {
-                    this.loading = true
-                    this.loadorgs();
-                }.bind(this), 0);
-            })
-            .catch (e => {
-                console.log(e)
-            })
+            if(confirm("Do you really want to delete?")){
+                axios.post(apiUrl + 'orgs/delete/' + del)
+                .then(() => {
+                    setTimeout(function () {
+                        this.loading = true
+                        this.loadorgs();
+                    }.bind(this), 0);
+                })
+                .catch (e => {
+                    console.log(e)
+                })
+            }
         }
     }
 })
