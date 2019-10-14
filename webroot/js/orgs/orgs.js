@@ -1,5 +1,7 @@
-let interval = null
-let intervalplus = null
+Vue.component('modal', {
+    template: '#modal-template'
+})
+
 let orgs = new Vue ({
     el: '#orgs',
     data () {
@@ -8,25 +10,22 @@ let orgs = new Vue ({
             loading: true,
             name: '',
             code: '',
-            orgdelete: false
+            editID: '',
+            editname: '',
+            editcode: '',
+            active: '',
+            orgdelete: false,
+            showModal: false
         }
     },
     mounted () {
         this.loadorgs()
-
-        interval = setInterval(function () {
-            if(interval < intervalplus){
-                this.loading = true
-                this.loadorgs();
-            }
-        }.bind(this), 0);
     },
     methods: {
         loadorgs: function () {
             axios.get(apiUrl + 'orgs')
             .then((response) => {
                 this.orgs = response.data
-                interval = response.data.length
             })
             .catch((e) => {
                 console.error(e)
@@ -38,20 +37,49 @@ let orgs = new Vue ({
                 name: this.name,
                 code: this.code
             })
-            .then((response) => {
+            .then(() => {
                 this.name = null,
                 this.code = null,
-                intervalplus = interval+1
+                setTimeout(function () {
+                    this.loading = true
+                    this.loadorgs();
+                }.bind(this), 0);
+            })
+            .catch (e => {
+                console.log(e)
+            })
+        },
+        showEditModal: function (id, name, code, isactive) {
+            this.showModal = true,
+            this.editID = id,
+            this.editname = name,
+            this.editcode = code,
+            this.active = isactive
+        },
+        editOrg: function () {
+            axios.post(apiUrl + 'orgs/update/' + this.editID, {
+                name: this.editname,
+                code: this.editcode,
+                isactive: this.active
+            })
+            .then(() => {
+                this.showModal = false
+                setTimeout(function () {
+                    this.loading = true
+                    this.loadorgs();
+                }.bind(this), 0);
             })
             .catch (e => {
                 console.log(e)
             })
         },
         delOrg: function (del) {
-            console.log(del)
             axios.post(apiUrl + 'orgs/delete/' + del)
-            .then((response) => {
-                intervalplus = interval+1
+            .then(() => {
+                setTimeout(function () {
+                    this.loading = true
+                    this.loadorgs();
+                }.bind(this), 0);
             })
             .catch (e => {
                 console.log(e)

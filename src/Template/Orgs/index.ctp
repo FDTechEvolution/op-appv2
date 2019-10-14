@@ -55,17 +55,55 @@
                                 <hr/>
                                 <div class="row text-center">
                                     <div class="col-4"><a class="btn btn-info btn-block" href="#"><i class="mdi mdi-eye"></i> รายละเอียด</a></div>
-                                    <div class="col-4"><a class="btn btn-success btn-block" href="#"><i class="mdi mdi-lead-pencil"></i> แก้ไข</a></div>
+                                    <div class="col-4"><button class="btn btn-success btn-block" type="submit" @click="showEditModal(org.id,org.name,org.code,org.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
                                     <div class="col-4"><button class="btn btn-warning btn-block" type="submit" @click="delOrg(org.id)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <modal v-if="showModal" @close="showModal = false">
+                        <h3 slot="header">แก้ไขรายการ {{editname}}</h3>
+                        <div slot="body">
+                            <strong>แก้ไขชื่อบริษัท/ร้าน :</strong> <input v-model="editname" type="text" class="form-control" required=""><br/>
+                            <strong>แก้ไขรหัส :</strong> <input v-model="editcode" class="form-control" type="text" required=""><br/>
+                            <div class="radio radio-info form-check-inline">
+                                <input v-model="active" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
+                                <input v-model="active" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
+                            </div>
+                        </div>
+                        <div slot="footer">
+                            <button class="btn btn-success" @click="editOrg()"><i class="mdi mdi-content-save"></i> Save</button>
+                            <button class="btn btn-warning" @click="showModal = false"><i class="mdi mdi-close-box"></i> Close</button>
+                        </div>
+                    </modal>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script type="text/x-template" id="modal-template">
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header"></slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body"></slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer"></slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+</script>
 
 <script>
     const apiUrl = '<?=APIURL?>';
