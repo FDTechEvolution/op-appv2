@@ -21,6 +21,8 @@ td.td-order {
 }
 strong.header-org {
     color: #666;
+    margin-bottom: 5px;
+    display: inline-block;
 }
 .card.org-card:hover {
     margin-top: -2px;
@@ -30,6 +32,15 @@ strong.header-org {
 .org-body-action:hover {
     box-shadow: 0px 0px 6px 1px #ddd;
     transition: all 0.5s ease;
+}
+input.form-control.frm-orgs {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 7px;
+}
+.edit-active {
+  box-shadow: 0px 0px 6px 1px #ddd;
+  transition: all 0.5s ease;
 }
 
 

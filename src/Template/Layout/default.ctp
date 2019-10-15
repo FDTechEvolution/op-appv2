@@ -25,7 +25,7 @@
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
         <script>
-            var user_id = '<?= $USERID ?>';
+            localStorage.setItem('USER_ID', '<?= $USERID ?>')
         </script>
     </head>
 
