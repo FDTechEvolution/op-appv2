@@ -29,6 +29,28 @@ use Cake\Event\Event;
  */
 class AppController extends Controller {
 
+    
+    public function beforeFilter(Event $event) {
+        parent::beforeFilter($event);
+        $this->normalAuthen();
+    }
+    
+    private function normalAuthen(){
+        $allowedPages = [
+            'register/index', 
+            'logout/index',
+            'login/index',
+            'identify/otp'
+            ];
+        $c = $this->request->getParam('controller');
+        $a = $this->request->getParam('action');
+        $current = strtolower(sprintf('%s/%s',$c,$a));
+        $this->log($current,'debug');
+        if(in_array($current, $allowedPages)){
+            $this->Auth->allow();
+        }
+        
+    }
     /**
      * Initialization hook method.
      *
@@ -47,19 +69,19 @@ class AppController extends Controller {
         $this->loadComponent('Flash');
         $this->loadComponent('RequestUrl');
 
-        // $this->loadComponent('Auth', [
-        //     'loginAction' => [
-        //         'controller' => 'Login',
-        //         'action' => 'index'
-        //     ],
-        //     'authError' => 'Did you really think you are allowed to see that?',
-        //     'authenticate' => [
-        //         'Form' => [
-        //             'fields' => ['username' => 'mobile', 'password' => 'password']
-        //         ]
-        //     ],
-        //     'storage' => 'Session'
-        // ]);
+         $this->loadComponent('Auth', [
+             'loginAction' => [
+                 'controller' => 'Login',
+                 'action' => 'index'
+             ],
+             'authError' => 'กรุณาเข้าสู่ระบบ',
+             'authenticate' => [
+                 'Form' => [
+                     'fields' => ['username' => 'mobile', 'password' => 'password']
+                 ]
+             ],
+             'storage' => 'Session'
+         ]);
 
         /*
          * Enable the following component for recommended CakePHP security settings.
