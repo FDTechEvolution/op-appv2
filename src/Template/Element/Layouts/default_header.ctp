@@ -176,17 +176,11 @@
                     </div>
                 </li>            
 
-                <li class="dropdown notification-list">
-                    <a href="javascript:void(0);" class="nav-link right-bar-toggle waves-effect waves-light">
-                        <i class="fe-settings noti-icon"></i>
-                    </a>
-                </li>
-
             </ul>
 
             <!-- LOGO -->
             <div class="logo-box">
-                <a href="index.html" class="logo text-center">
+                <a href="<?=SITEURL?>" class="logo text-center">
                     <span class="logo-lg">
                         <?=$this->Html->image('/css/assets/images/logo-light.png',['height'=>'20'])?>
                         
