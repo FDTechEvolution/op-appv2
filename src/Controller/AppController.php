@@ -34,10 +34,9 @@ class AppController extends Controller {
         parent::beforeFilter($event);
         $this->normalAuthen();
         
-        $USERID = $this->request->getSession()->read('Authen.User.id');
-        $ORGID = $this->request->getSession()->read('Authen.User.org_id');
-        $this->log($ORGID, 'debug');
-        
+        $USERID = $this->request->getSession()->read('Auth.User.id');
+        $ORGID = $this->request->getSession()->read('Auth.User.org_id');
+
         $this->set(compact('USERID', 'ORGID'));
     }
     
