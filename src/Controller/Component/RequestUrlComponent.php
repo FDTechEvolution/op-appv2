@@ -58,6 +58,9 @@ class RequestUrlComponent extends Component {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 40);
+        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,40);
+
 
         // execute!
         $resp = curl_exec($ch);

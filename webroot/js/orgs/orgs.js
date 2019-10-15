@@ -23,7 +23,7 @@ let orgs = new Vue ({
     },
     methods: {
         loadorgs: function () {
-            axios.get(apiUrl + 'orgs')
+            axios.get(apiUrl + 'orgs/index/' + ORG_ID)
             .then((response) => {
                 this.orgs = response.data
             })

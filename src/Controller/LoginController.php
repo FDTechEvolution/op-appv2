@@ -28,7 +28,7 @@ class LoginController extends AppController {
             $this->log($res,'debug');
             if ($res['result'] == true) {
                 $user = $res['user'];
-               $this->Auth->setUser($user);
+                $this->Auth->setUser($user);
                 return $this->redirect(['controller' => 'dashboard']);
             }
         }

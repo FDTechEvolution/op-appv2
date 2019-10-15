@@ -35,8 +35,10 @@ class AppController extends Controller {
         $this->normalAuthen();
         
         $USERID = $this->request->getSession()->read('Authen.User.id');
+        $ORGID = $this->request->getSession()->read('Authen.User.org_id');
+        $this->log($ORGID, 'debug');
         
-        $this->set(compact('USERID'));
+        $this->set(compact('USERID', 'ORGID'));
     }
     
     private function normalAuthen(){
