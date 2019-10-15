@@ -33,6 +33,10 @@ class AppController extends Controller {
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         $this->normalAuthen();
+        
+        $USERID = $this->request->getSession()->read('Authen.User.id');
+        
+        $this->set(compact('USERID'));
     }
     
     private function normalAuthen(){

@@ -11,10 +11,10 @@
         <link rel="shortcut icon" href="assets/images/favicon.ico">
 
         <!-- App css -->
-        <?=$this->Html->css('assets/css/bootstrap.min')?>
-        <?=$this->Html->css('assets/css/icons.min')?>
-        <?=$this->Html->css('assets/css/app.min')?>
-        <?=$this->Html->css('assets/css/custom')?>
+        <?= $this->Html->css('assets/css/bootstrap.min') ?>
+        <?= $this->Html->css('assets/css/icons.min') ?>
+        <?= $this->Html->css('assets/css/app.min') ?>
+        <?= $this->Html->css('assets/css/custom') ?>
 
         <?= $this->Html->script('jquery.min.js') ?>
         <?= $this->Html->script('modernizr.min.js') ?>
@@ -23,12 +23,16 @@
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://unpkg.com/vuejs-paginate@0.9.0"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+        <script>
+            var user_id = '<?= $USERID ?>';
+        </script>
     </head>
 
     <body>
 
         <!-- Navigation Bar-->
-        <?=$this->element('Layouts/default_header')?>
+        <?= $this->element('Layouts/default_header') ?>
         <!-- End Navigation Bar-->
 
         <!-- ============================================================== -->
@@ -251,9 +255,9 @@
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>
 
-        <?=$this->Html->script('/css/assets/js/vendor.min.js')?>
+        <?= $this->Html->script('/css/assets/js/vendor.min.js') ?>
 
-        <?=$this->Html->script('/css/assets/js/app.min.js')?>
+        <?= $this->Html->script('/css/assets/js/app.min.js') ?>
 
         <script>
             var resizefunc = [];
