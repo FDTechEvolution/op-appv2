@@ -168,12 +168,15 @@
                     
 
                     <li class="has-submenu">
-                        <a href="#"> <i class="remixicon-file-copy-2-line"></i>Pages <div class="arrow-down"></div></a>
+                        <a href="#"> <i class="remixicon-file-copy-2-line"></i>คลัง/สินค้า <div class="arrow-down"></div></a>
                         <ul class="submenu megamenu">
                             <li>
                                 <ul>
                                     <li>
-                                        <a href="pages-starter.html">Starter</a>
+                                        <a href="<?=SITEURL?>">ประเภท/กลุ่มสินค้า</a>
+                                    </li>
+                                    <li>
+                                        <a href="<?=SITEURL?>">สินค้า/ต้นทุน</a>
                                     </li>
 
                                 </ul>
@@ -181,9 +184,13 @@
                             <li>
                                 <ul>
                                     <li>
-                                        <a href="pages-logout.html">Logout</a>
+                                        <a href="<?=SITEURL?>">คลังสินค้า</a>
                                     </li>
-
+                                    <li>
+                                        <a href="<?=SITEURL?>">นำเข้า/รับสินค้า</a>
+                                    </li><li>
+                                        <a href="<?=SITEURL?>">ส่งออก/ย้านสินค้า</a>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
