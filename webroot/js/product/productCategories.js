@@ -26,6 +26,7 @@ let productCategory = new Vue ({
         loadProductCategory: function () {
             axios.get(apiUrl + 'product-categories/getcategories/' + localStorage.getItem('ORG'))
             .then((response) => {
+                console.log(response.data)
                 this.productCategories = response.data
             })
             .catch (e => {
@@ -91,6 +92,24 @@ let productCategory = new Vue ({
                     console.log(e)
                 })
             }
+        }
+    }
+})
+
+let products = new Vue ({
+    el: '#products',
+    data () {
+        return {
+            products: [],
+            total: 0
+        }
+    },
+    mounted () {
+
+    },
+    methods: {
+        loadProduct: function () {
+            
         }
     }
 })
