@@ -173,10 +173,10 @@
                             <li>
                                 <ul>
                                     <li>
-                                        <a href="<?=SITEURL?>">ประเภท/กลุ่มสินค้า</a>
+                                        <a href="<?=SITEURL?>product-cat">ประเภท/กลุ่มสินค้า</a>
                                     </li>
                                     <li>
-                                        <a href="<?=SITEURL?>">สินค้า/ต้นทุน</a>
+                                        <a href="<?=SITEURL?>product">สินค้า/ต้นทุน</a>
                                     </li>
 
                                 </ul>
@@ -184,12 +184,12 @@
                             <li>
                                 <ul>
                                     <li>
-                                        <a href="<?=SITEURL?>">คลังสินค้า</a>
+                                        <a href="<?=SITEURL?>warehouse">คลังสินค้า</a>
                                     </li>
                                     <li>
-                                        <a href="<?=SITEURL?>">นำเข้า/รับสินค้า</a>
+                                        <a href="<?=SITEURL?>goods-receive">นำเข้า/รับสินค้า</a>
                                     </li><li>
-                                        <a href="<?=SITEURL?>">ส่งออก/ย้านสินค้า</a>
+                                        <a href="<?=SITEURL?>goods-shipment">ส่งออก/ย้ายสินค้า</a>
                                     </li>
                                 </ul>
                             </li>
