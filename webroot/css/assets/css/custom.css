@@ -64,8 +64,24 @@ input.form-control.frm-orgs {
   vertical-align: middle;
 }
 
+.modal-wrapper-product {
+  display: table-cell;
+  padding-top: 5%;
+}
+
 .modal-container {
   width: 600px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-container-product {
+  width: 800px;
   margin: 0px auto;
   padding: 20px 30px;
   background-color: #fff;

@@ -2,11 +2,16 @@ Vue.component('modal', {
     template: '#modal-template'
 })
 
+Vue.component('show-products', {
+    template: '#modal-products'
+})
+
 let productCategory = new Vue ({
     el: '#product-category',
     data () {
         return {
             productCategories: [],
+            products: [],
             loading: true,
             name: '',
             description: '',
@@ -16,7 +21,9 @@ let productCategory = new Vue ({
             editName: '',
             editDescription: '',
             editIsactive: '',
-            showModal: false
+            showCreate: false,
+            nameDuplicate: '',
+            showCateProduct: false
         }
     },
     mounted () {
@@ -26,7 +33,6 @@ let productCategory = new Vue ({
         loadProductCategory: function () {
             axios.get(apiUrl + 'product-categories/getcategories/' + localStorage.getItem('ORG'))
             .then((response) => {
-                console.log(response.data)
                 this.productCategories = response.data
             })
             .catch (e => {
@@ -41,15 +47,21 @@ let productCategory = new Vue ({
                 description: this.description,
                 isactive: this.isactive
             })
-            .then(() => {
-                this.showModal = false
-                this.name = null
-                this.description = null
-                this.isactive = null
-                setTimeout(function () {
-                    this.loading = true
-                    this.loadProductCategory();
-                }.bind(this), 0);
+            .then((response) => {
+                let nameChecked = response.data.result
+                if(!nameChecked) {
+                    this.nameDuplicate = 'ชื่อประเภท/กลุ่มสินค้า ไม่สามารถใช้ซ้ำได้...กรุณาเปลี่ยน'
+                }else{
+                    this.nameDuplicate = ''
+                    this.showCreate = false
+                    this.name = null
+                    this.description = null
+                    this.isactive = null
+                    setTimeout(function () {
+                        this.loading = true
+                        this.loadProductCategory();
+                    }.bind(this), 0);
+                }
             })
             .catch (e => {
                 console.log(e)
@@ -62,57 +74,79 @@ let productCategory = new Vue ({
             this.editDescription = description,
             this.editIsactive = isactive
         },
-        updateProductCategories: function () {
+        updateProductCategory: function () {
             axios.post(apiUrl + 'product-categories/update/' + this.editID, {
+                org_id: localStorage.getItem('ORG'),
                 name: this.editName,
                 description: this.editDescription,
                 isactive: this.editIsactive
             })
-            .then(() => {
-                this.editProductCategories = false
-                setTimeout(function () {
-                    this.loading = true
-                    this.loadProductCategory();
-                }.bind(this), 0);
+            .then((response) => {
+                let nameChecked = response.data.result
+                if(!nameChecked) {
+                    this.nameDuplicate = 'ชื่อประเภท/กลุ่มสินค้า ไม่สามารถใช้ซ้ำได้...กรุณาเปลี่ยน'
+                }else{
+                    this.nameDuplicate = ''
+                    this.editProductCategories = false
+                    setTimeout(function () {
+                        this.loading = true
+                        this.loadProductCategory();
+                    }.bind(this), 0);
+                }
             })
             .catch (e => {
                 console.log(e)
             })
         },
-        delProductCategories: function (del, name) {
-            if(confirm("ลบประเภท/กลุ่มสินค้า : " + name + "\nหากลบแล้ว...รายการสินค้าที่อยู่ในกลุ่มนี้จะถูกลบไปด้วย \nยืนยันการลบ ?")){
-                axios.post(apiUrl + 'product-categories/delete/' + del)
-                .then(() => {
-                    setTimeout(function () {
-                        this.loading = true
-                        this.loadProductCategory();
-                    }.bind(this), 0);
-                })
-                .catch (e => {
-                    console.log(e)
-                })
+        delProductCategories: function (del, name, total) {
+            if(total != 0){
+                alert("ไม่สามารถลบประเภท/กลุ่มสินค้า : '" + name + "' \nเนื่องจากยังมีสินค้าอยู่ในกลุ่มนี้จำนวน " + total + " ชิ้น กรุณาจัดการก่อนลบกลุ่ม...")
+            }else{
+                if(confirm("ลบประเภท/กลุ่มสินค้า : '" + name + "' ยืนยันการลบ ?")){
+                    axios.post(apiUrl + 'product-categories/delete/' + del)
+                    .then(() => {
+                        setTimeout(function () {
+                            this.loading = true
+                            this.loadProductCategory();
+                        }.bind(this), 0);
+                    })
+                    .catch (e => {
+                        console.log(e)
+                    })
+                }
             }
+        },
+        showProducts: function (cateID) {
+            this.showCateProduct = true
+            axios.get(apiUrl + 'products/all?category=' + cateID)
+            .then((response) => {
+                this.products = response.data
+            })
+            .catch (e => {
+                console.log(e)
+            })
+            .finally(() => this.loading = false)
         }
     }
 })
 
-let products = new Vue ({
-    el: '#products',
-    data () {
-        return {
-            products: [],
-            total: 0
-        }
-    },
-    mounted () {
+// let products = new Vue ({
+//     el: '#products',
+//     data () {
+//         return {
+//             products: [],
+//             total: 0
+//         }
+//     },
+//     mounted () {
 
-    },
-    methods: {
-        loadProduct: function () {
+//     },
+//     methods: {
+//         loadProduct: function () {
             
-        }
-    }
-})
+//         }
+//     }
+// })
 
 let users = new Vue ({
     el: '#users',
