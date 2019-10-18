@@ -26,6 +26,7 @@
 
         <script>
             localStorage.setItem('USER_ID', '<?= $USERID ?>')
+            localStorage.setItem('ORG', '<?= $ORGID ?>')
         </script>
     </head>
 

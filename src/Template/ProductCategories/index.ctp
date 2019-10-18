@@ -132,7 +132,7 @@
                                             <td class="text-center">{{index+1}}</td>
                                             <td>{{product.name}}</td>
                                             <td>{{product.brand_id}}</td>
-                                            <td class="text-center">({{product.cost}}</td>
+                                            <td class="text-center">{{product.cost}}</td>
                                             <td class="text-center">{{product.price}}</td>                             
                                         </tr>
                                     </tbody>

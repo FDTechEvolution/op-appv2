@@ -130,23 +130,6 @@ let productCategory = new Vue ({
     }
 })
 
-// let products = new Vue ({
-//     el: '#products',
-//     data () {
-//         return {
-//             products: [],
-//             total: 0
-//         }
-//     },
-//     mounted () {
-
-//     },
-//     methods: {
-//         loadProduct: function () {
-            
-//         }
-//     }
-// })
 
 let users = new Vue ({
     el: '#users',
