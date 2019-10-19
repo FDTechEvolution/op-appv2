@@ -26,6 +26,7 @@ let showproduct = new Vue ({
     data () {
         return {
             products: [],
+            productEdit: [],
             loading: true,
             productCate: [],
             productBrand: [],
@@ -35,7 +36,8 @@ let showproduct = new Vue ({
             price: '',
             description: '',
             isactive: '',
-            showCreate: false
+            showCreate: false,
+            showEdit: false
         }
     },
     mounted () {
@@ -80,8 +82,26 @@ let showproduct = new Vue ({
                 }.bind(this), 0);
             })
         },
+        showEdit: function (id) {
+            axios.get(apiUrl + 'products/get/' + id)
+            .then((response) => {
+                this.showEdit = true
+                this.productEdit = response.data
+            })
+            .catch (e => {
+                console.log(e)
+            })
+        },
         delProduct: function (del, name, index) {
-
+            if(confirm("ลบสินค้า : '" + name + "' ยืนยันการลบ ?")){
+                axios.post(apiUrl + 'products/delete/' + del)
+                .then(() => {
+                    this.products.splice(index,1)
+                })
+                .catch (e => {
+                    console.log(e)
+                })
+            }
         },
         loadCategory: function () {
             axios.get(apiUrl + 'product-categories/getcategories/' + localStorage.getItem('ORG'))
