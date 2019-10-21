@@ -44,14 +44,14 @@
                     </thead>
                     <tbody id="show-products">
                         <tr v-if='loading'><td colspan="7" class="text-center"><img src="img/loading_v2.gif"></td></tr>
-                        <tr v-else-if="products.length == 0" class="text-center"><td colspan="5" class="text-center">NO PRODUCT...</td></tr>
+                        <tr v-else-if="products.length == 0" class="text-center"><td colspan="7" class="text-center">NO PRODUCT...</td></tr>
                         <tr v-else
                             v-for="(product, index) in products"
-                            v-blind:key="index"
+                            v-bind:key="index"
                         >
                             <td class="text-center">{{index+1}}</td>
                             <td>{{product.name}}</td>
-                            <td>{{product.product_category_id}}</td>
+                            <td>{{product.category}}</td>
                             <td class="text-center">{{product.cost}}</td>
                             <td class="text-center">{{product.price}}</td>
                             <td class="text-center">0</td>
@@ -96,30 +96,30 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="create.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="code" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="create.code" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>
-                                <div class="col-9"><input v-model="cost" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
+                                <div class="col-9"><input v-model="create.cost" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาขาย</div>
-                                <div class="col-9"><input v-model="price" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
+                                <div class="col-9"><input v-model="create.price" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รายละเอียด</div>
-                                <div class="col-9"><textarea v-model="description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea></div>
+                                <div class="col-9"><textarea v-model="create.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">สถานะ</div>
                                 <div class="col-9">
                                     <div class="radio radio-info form-check-inline">
-                                        <input v-model="isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
-                                        <input v-model="isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
+                                        <input v-model="create.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
+                                        <input v-model="create.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
                                     </div>
                                 </div>
                             </div>
@@ -131,14 +131,15 @@
                     </modal>
 
                     <!-- Show Edit -->
-                    <modal v-if="showEdit" @close="showEdit = false">
+                    <modal v-if="showEditModal" @close="showEditModal = false">
                         <h3 slot="header">แก้ไขรายการสินค้า</h3>
-                        <div slot="body">
+                        <div v-if="loadingEdit" slot="body"><div class="row"><div class="col-12 text-center"><img src="img/loading_v2.gif"></div></div></div>
+                        <div v-else slot="body">
                             <div class="row">
                                 <div class="col-3 product-add-title">หมวดหมู่</div>
                                 <div v-if="productCate == 0" class="col-9 no-content">ไม่มีหมวดหมู่ <a href="#">สร้างหมวดหมู่</a></div>
                                 <div v-else class="col-9">
-                                    <select id="category" class="form-control frm-product-category">
+                                    <select id="category" v-model="selected.category" class="form-control frm-product-category">
                                         <option style="color: #ddd;">เลือกหมวดหมู่</option>
                                         <option
                                             v-for="(category, index) in productCate"
@@ -152,7 +153,7 @@
                                 <div class="col-3 product-add-title">ยี่ห้อ</div>
                                 <div v-if="productBrand == 0" class="col-9 no-content">ไม่มียี่ห้อ <a href="#">สร้างยี่ห้อ</a></div>
                                 <div v-else class="col-9">
-                                    <select id="brand" class="form-control frm-product-category">
+                                    <select id="brand" v-model="selected.brand" class="form-control frm-product-category">
                                         <option style="color: #ddd;">เลือกยี่ห้อ</option>
                                         <option
                                             v-for="(brand, index) in productBrand"
@@ -164,37 +165,37 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="update.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="code" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="update.code" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>
-                                <div class="col-9"><input v-model="cost" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
+                                <div class="col-9"><input v-model="update.cost" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาขาย</div>
-                                <div class="col-9"><input v-model="price" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
+                                <div class="col-9"><input v-model="update.price" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รายละเอียด</div>
-                                <div class="col-9"><textarea v-model="description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea></div>
+                                <div class="col-9"><textarea v-model="update.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">สถานะ</div>
                                 <div class="col-9">
                                     <div class="radio radio-info form-check-inline">
-                                        <input v-model="isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
-                                        <input v-model="isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
+                                        <input v-model="update.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
+                                        <input v-model="update.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div slot="footer">
-                            <button class="btn btn-success" @click="creatProduct()"><i class="mdi mdi-content-save"></i> บันทึก</button>
-                            <button class="btn btn-warning" @click="showCreate = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                            <button class="btn btn-success" @click="updateProduct(update.id)"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-warning" @click="showEditModal = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
                     </modal>
             </div>

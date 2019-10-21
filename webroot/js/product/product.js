@@ -26,18 +26,33 @@ let showproduct = new Vue ({
     data () {
         return {
             products: [],
-            productEdit: [],
-            loading: true,
             productCate: [],
             productBrand: [],
-            name: '',
-            code: '',
-            cost: '',
-            price: '',
-            description: '',
-            isactive: '',
+            update: {
+                id: '',
+                name: '',
+                code: '',
+                cost: '',
+                price: '',
+                description: '',
+                isactive: ''
+            },
+            create: {
+                name: '',
+                code: '',
+                cost: '',
+                price: '',
+                description: '',
+                isactive: ''
+            },
+            selected: {
+                category: '',
+                brand: ''
+            },
             showCreate: false,
-            showEdit: false
+            showEditModal: false,
+            loading: true,
+            loadingEdit: true
         }
     },
     mounted () {
@@ -61,35 +76,64 @@ let showproduct = new Vue ({
                 org_id: localStorage.getItem('ORG'),
                 product_category_id: document.getElementById('category').value,
                 brand_id: document.getElementById('brand').value,
-                name: this.name,
-                code: this.code,
-                cost: this.cost,
-                price: this.price,
-                description: this.description,
-                isactive: this.isactive
+                name: this.create.name,
+                code: this.create.code,
+                cost: this.create.cost,
+                price: this.create.price,
+                description: this.create.description,
+                isactive: this.create.isactive
             })
             .then(() => {
                 this.showCreate = false
-                this.name = ''
-                this.code = ''
-                this.cost = ''
-                this.price = ''
-                this.description = ''
-                this.isactive = ''
+                this.create.name = ''
+                this.create.code = ''
+                this.create.cost = ''
+                this.create.price = ''
+                this.create.description = ''
+                this.create.isactive = ''
                 setTimeout(function () {
                     this.loading = true
                     this.loadProduct();
                 }.bind(this), 0);
             })
         },
-        showEdit: function (id) {
-            axios.get(apiUrl + 'products/get/' + id)
+        showEdit: function (edit) {
+            this.showEditModal = true
+            this.loadingEdit = true
+            axios.get(apiUrl + 'products/get/' + edit)
             .then((response) => {
-                this.showEdit = true
-                this.productEdit = response.data
+                this.update.id = response.data.id
+                this.update.name = response.data.name
+                this.update.code = response.data.code
+                this.update.cost = response.data.cost
+                this.update.price = response.data.price
+                this.update.description = response.data.description
+                this.update.isactive = response.data.isactive
+                this.selected.category = response.data.product_category_id
+                this.selected.brand = response.data.brand_id
             })
             .catch (e => {
                 console.log(e)
+            })
+            .finally(() => this.loadingEdit = false)
+        },
+        updateProduct: function (update) {
+            axios.post(apiUrl + 'products/update/' + update, {
+                product_category_id: document.getElementById('category').value,
+                brand_id: document.getElementById('brand').value,
+                name: this.update.name,
+                code: this.update.code,
+                cost: this.update.cost,
+                price: this.update.price,
+                description: this.update.description,
+                isactive: this.update.isactive
+            })
+            .then(() => {
+                this.showEditModal = false
+                setTimeout(function () {
+                    this.loading = true
+                    this.loadProduct();
+                }.bind(this), 0);
             })
         },
         delProduct: function (del, name, index) {
