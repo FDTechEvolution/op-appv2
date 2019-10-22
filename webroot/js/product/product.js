@@ -28,6 +28,7 @@ let showproduct = new Vue ({
             products: [],
             productCate: [],
             productBrand: [],
+            duplicate: '',
             update: {
                 id: '',
                 name: '',
@@ -52,7 +53,11 @@ let showproduct = new Vue ({
             showCreate: false,
             showEditModal: false,
             loading: true,
-            loadingEdit: true
+            loadingEdit: true,
+            duplicated: {
+                name: false,
+                code: false
+            }
         }
     },
     mounted () {
@@ -83,18 +88,26 @@ let showproduct = new Vue ({
                 description: this.create.description,
                 isactive: this.create.isactive
             })
-            .then(() => {
-                this.showCreate = false
-                this.create.name = ''
-                this.create.code = ''
-                this.create.cost = ''
-                this.create.price = ''
-                this.create.description = ''
-                this.create.isactive = ''
-                setTimeout(function () {
-                    this.loading = true
-                    this.loadProduct();
-                }.bind(this), 0);
+            .then((response) => {
+                let Checked = response.data.result
+                if(!Checked) {
+                    this.duplicate = "ชื่อสินค้า หรือ รหัส ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
+                    this.duplicated = true
+                } else {
+                    this.duplicate = ''
+                    this.duplicated = false
+                    this.showCreate = false
+                    this.create.name = ''
+                    this.create.code = ''
+                    this.create.cost = ''
+                    this.create.price = ''
+                    this.create.description = ''
+                    this.create.isactive = ''
+                    setTimeout(function () {
+                        this.loading = true
+                        this.loadProduct();
+                    }.bind(this), 0);
+                }
             })
         },
         showEdit: function (edit) {
@@ -119,6 +132,7 @@ let showproduct = new Vue ({
         },
         updateProduct: function (update) {
             axios.post(apiUrl + 'products/update/' + update, {
+                org_id: localStorage.getItem('ORG'),
                 product_category_id: document.getElementById('category').value,
                 brand_id: document.getElementById('brand').value,
                 name: this.update.name,
@@ -128,12 +142,31 @@ let showproduct = new Vue ({
                 description: this.update.description,
                 isactive: this.update.isactive
             })
-            .then(() => {
-                this.showEditModal = false
-                setTimeout(function () {
-                    this.loading = true
-                    this.loadProduct();
-                }.bind(this), 0);
+            .then((response) => {
+                let Checked = response.data.result
+                let seterror = ''
+                if(!Checked) {
+                    switch(response.data.stat){
+                        case 1:
+                            seterror = "ชื่อสินค้า"
+                            this.duplicated.name = true
+                        break
+                        case 2:
+                            seterror = "รหัส"
+                            this.duplicated.code = true
+                        break
+                    }
+                    this.duplicate = seterror + " ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
+                } else {
+                    this.duplicate = ''
+                    this.duplicated.name = false
+                    this.duplicated.code = false
+                    this.showEditModal = false
+                    setTimeout(function () {
+                        this.loading = true
+                        this.loadProduct();
+                    }.bind(this), 0);
+                }
             })
         },
         delProduct: function (del, name, index) {

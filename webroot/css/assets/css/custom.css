@@ -52,6 +52,15 @@ input.form-control.frm-orgs {
 .product-add-title {
   padding-top: 7px;
 }
+tr.tr-bottom-line {
+  border-bottom: 1px solid #eee;
+}
+td.td-padding {
+  padding: 7px;
+}
+.product-code {
+  font-size: 11px;
+}
 
 
 .modal-mask {

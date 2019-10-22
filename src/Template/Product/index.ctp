@@ -48,16 +48,17 @@
                         <tr v-else
                             v-for="(product, index) in products"
                             v-bind:key="index"
+                            class="tr-bottom-line"
                         >
                             <td class="text-center">{{index+1}}</td>
-                            <td>{{product.name}}</td>
+                            <td>{{product.name}}<div class="product-code" v-if="product.code != null"> [ {{product.code}} ]</div></td>
                             <td>{{product.category}}</td>
                             <td class="text-center">{{product.cost}}</td>
                             <td class="text-center">{{product.price}}</td>
                             <td class="text-center">0</td>
-                            <td class="text-center">
-                                <button class="btn btn-success" type="submit" @click="showEdit(product.id)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button>
-                                <button class="btn btn-warning" type="submit" @click="delProduct(product.id,product.name,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button>
+                            <td class="text-center td-padding">
+                                <button class="btn btn-success btn-sm" type="submit" @click="showEdit(product.id)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button>
+                                <button class="btn btn-warning btn-sm" type="submit" @click="delProduct(product.id,product.name,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button>
                             </td>
                         </tr>
                     </tbody>
@@ -96,11 +97,11 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="create.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="create.name" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="create.code" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="create.code" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>
@@ -121,6 +122,11 @@
                                         <input v-model="create.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
                                         <input v-model="create.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
                                     </div>
+                                </div>
+                            </div>
+                            <div v-if="duplicate != null" class="row">
+                                <div class="col-12 text-center">
+                                    <p style="color: #dd0000; margin-bottom: 0; margin-top: 20px;">{{duplicate}}</p>
                                 </div>
                             </div>
                         </div>
@@ -165,11 +171,11 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="update.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="update.name" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="update.code" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="update.code" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>
@@ -192,6 +198,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <div v-if="duplicate != null" class="row">
+                                <div class="col-12 text-center">
+                                    <p style="color: #dd0000; margin-bottom: 0; margin-top: 20px;">{{duplicate}}</p>
+                                </div>
+                            </div>
                         </div>
                         <div slot="footer">
                             <button class="btn btn-success" @click="updateProduct(update.id)"><i class="mdi mdi-content-save"></i> บันทึก</button>
@@ -202,6 +213,10 @@
         </div>
     </div>
 </div>
+
+<style>
+    .unactive { border-color: #dd0000; }
+</style>
 
 <script>
     const apiUrl = '<?=APIURL?>';
