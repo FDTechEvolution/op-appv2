@@ -61,6 +61,11 @@ td.td-padding {
 .product-code {
   font-size: 11px;
 }
+.slide-show-create {
+  transition-property: all;
+	transition-duration: .5s;
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
 
 
 .modal-mask {
