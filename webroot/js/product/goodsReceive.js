@@ -2,7 +2,7 @@ let createline = new Vue ({
     el: '#createline',
     data () {
         return {
-            productBrand: [],
+            bpartners: [],
             warehouses: [],
             users: [],
             userlogin: '',
@@ -11,7 +11,7 @@ let createline = new Vue ({
         }
     },
     mounted () {
-        this.loadBrand(),
+        this.loadBpartner(),
         this.loadWarehouse(),
         this.loadUser()
     },
@@ -19,16 +19,18 @@ let createline = new Vue ({
         createWH: function () {
             axios.post(apiUrl + 'goods-receive/create/', {
                 org_id: localStorage.getItem('ORG'),
-                brand_id: document.getElementById('bpartner').value,
+                bpartner_id: document.getElementById('bpartner').value,
                 to_warehouse_id: document.getElementById('warehouse').value,
-                docdate: document.getElementById('docdate').value,
                 user_id: document.getElementById('user').value,
-                description: this.description,
-                isshipment: 'Y',
-                status: 'DR'
+                description: this.description
             })
             .then(() => {
                 this.description = ''
+                this.showCreate = false
+                setTimeout(function () {
+                    this.loading = true
+                    this.loadShipment();
+                }.bind(this), 0);
             })
             .catch (e => {
                 console.log(e)
@@ -41,10 +43,10 @@ let createline = new Vue ({
                 this.showCreate = true
             }
         },
-        loadBrand: function () {
-            axios.get(apiUrl + 'brands/all?org=' + localStorage.getItem('ORG'))
+        loadBpartner: function () {
+            axios.get(apiUrl + 'bpartners/all/' + localStorage.getItem('ORG'))
             .then((response) => {
-                this.productBrand = response.data
+                this.bpartners = response.data
             })
             .catch (e => {
                 console.log(e)
@@ -76,14 +78,82 @@ let shipmentline = new Vue ({
     el: '#shipment-line',
     data () {
         return {
-
+            loading: true,
+            shipments: [],
+            products: [],
+            addProducts: false,
+            showProductLine: false,
+            shipmentLines: {
+                id: '',
+                bpartner: '',
+                towarehouse: ''
+            },
+            lineCreate: {
+                product: '',
+                qty: '',
+                description: ''
+            }
         }
     },
     mounted () {
-
+        this.loadShipment()
+        this.loadProduct()
+        this.loadShipmentLine()
     },
     methods: {
+        loadShipment: function () {
+            axios.get(apiUrl + 'goods-receive/all/' + localStorage.getItem('ORG'))
+            .then((response) => {
+                this.shipments = response.data
+            })
+            .catch(e => {
+                console.log(e)
+            })
+            .finally(() => this.loading = false)
+        },
+        shipmentLine: function (id, bpartner, towarehouse) {
+            this.addProducts = true
+            this.shipmentLines.id = id
+            this.shipmentLines.bpartner = bpartner
+            this.shipmentLines.towarehouse = towarehouse
+        },
+        createShipmentLine: function (){
+            axios.post(apiUrl + 'goods-receive/createline/', {
+                shipment_inout_id: this.shipmentLines.id,
+                product_id: document.getElementById('products').value,
+                qty: this.lineCreate.qty,
+                description: this.shipmentLines.description
+            })
+            .then((response) => {
+                this.showProductLine = false
+                console.log(response)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        loadShipmentLine: function () {
+            axios.get(apiUrl + 'goods-receive/shipmentline/')
+            .then((response) => {
+                this.loadShipmentLines = response.data
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        confirmCreateShipmentLine: function () {
 
+        },
+        loadProduct: function () {
+            axios.get(apiUrl + 'products/all?org=' + localStorage.getItem('ORG'))
+            .then((response) => {
+                this.products = response.data
+            })
+            .catch (e => {
+                console.log(e)
+            })
+            .finally(() => this.loading = false)
+        }
     }
 })
 
@@ -119,7 +189,7 @@ Vue.component('modal', {
     template: `<transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
-        <div class="modal-container-product">
+        <div class="modal-container">
 
           <div class="modal-header">
             <slot name="header"></slot>
