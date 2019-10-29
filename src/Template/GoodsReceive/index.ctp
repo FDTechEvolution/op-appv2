@@ -27,7 +27,7 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-12 text-right">
-                                    <button class="btn btn-primary" type="submit" @click="createline(showCreate,)"> สร้างรายการรับสินค้าใหม่</button>
+                                    <button class="btn btn-primary" type="submit" @click="createline(showCreate)"> สร้างรายการรับสินค้าใหม่</button>
                                 </div>
                             </div>
                             <div v-if="showCreate" class="slide-show-create">
@@ -36,7 +36,7 @@
                                         <label>ต้นทางสินค้า</label>
                                         <div v-if="productBrand == 0" class="no-content">ไม่มีต้นทางสินค้า <a href="#">สร้างต้นทางสินค้า</a></div>
                                         <div v-else>
-                                            <select id="brand" class="form-control">
+                                            <select id="bpartner" class="form-control">
                                                 <option style="color: #ddd;">เลือกต้นทางสินค้า</option>
                                                 <option
                                                     v-for="(brand, index) in productBrand"

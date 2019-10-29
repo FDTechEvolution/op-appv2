@@ -17,7 +17,22 @@ let createline = new Vue ({
     },
     methods: {
         createWH: function () {
-            
+            axios.post(apiUrl + 'goods-receive/create/', {
+                org_id: localStorage.getItem('ORG'),
+                brand_id: document.getElementById('bpartner').value,
+                to_warehouse_id: document.getElementById('warehouse').value,
+                docdate: document.getElementById('docdate').value,
+                user_id: document.getElementById('user').value,
+                description: this.description,
+                isshipment: 'Y',
+                status: 'DR'
+            })
+            .then(() => {
+                this.description = ''
+            })
+            .catch (e => {
+                console.log(e)
+            })
         },
         createline: function (stat) {
             if(stat == true){
