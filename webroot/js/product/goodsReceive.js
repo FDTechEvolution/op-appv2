@@ -7,13 +7,32 @@ let createline = new Vue ({
             users: [],
             userlogin: '',
             description: '',
-            showCreate: false
+            showCreate: false,
+            loading: true,
+            shipments: [],
+            products: [],
+            loadShipmentLines: [],
+            addProducts: false,
+            showProductLine: false,
+            shipmentLines: {
+                id: '',
+                bpartner: '',
+                towarehouse: '',
+                status: ''
+            },
+            lineCreate: {
+                product: '',
+                qty: '',
+                description: ''
+            }
         }
     },
     mounted () {
         this.loadBpartner(),
         this.loadWarehouse(),
-        this.loadUser()
+        this.loadUser(),
+        this.loadShipment()
+        this.loadProduct()
     },
     methods: {
         createWH: function () {
@@ -28,13 +47,24 @@ let createline = new Vue ({
                 this.description = ''
                 this.showCreate = false
                 setTimeout(function () {
-                    this.loading = true
+                    this.loading = false
                     this.loadShipment();
                 }.bind(this), 0);
             })
             .catch (e => {
                 console.log(e)
             })
+        },
+        shipmentDel: function (id, index) {
+            if(confirm("ยืนยันการลบ?")){
+                axios.post(apiUrl + 'goods-receive/shipmentdel/' + id)
+                .then(() => {
+                    this.shipments.splice(index,1)
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+            }
         },
         createline: function (stat) {
             if(stat == true){
@@ -70,37 +100,10 @@ let createline = new Vue ({
             .catch (e => {
                 console.log(e)
             })
-        }
-    }
-})
+        },
 
-let shipmentline = new Vue ({
-    el: '#shipment-line',
-    data () {
-        return {
-            loading: true,
-            shipments: [],
-            products: [],
-            addProducts: false,
-            showProductLine: false,
-            shipmentLines: {
-                id: '',
-                bpartner: '',
-                towarehouse: ''
-            },
-            lineCreate: {
-                product: '',
-                qty: '',
-                description: ''
-            }
-        }
-    },
-    mounted () {
-        this.loadShipment()
-        this.loadProduct()
-        this.loadShipmentLine()
-    },
-    methods: {
+        // shipmentline section
+
         loadShipment: function () {
             axios.get(apiUrl + 'goods-receive/all/' + localStorage.getItem('ORG'))
             .then((response) => {
@@ -111,29 +114,42 @@ let shipmentline = new Vue ({
             })
             .finally(() => this.loading = false)
         },
-        shipmentLine: function (id, bpartner, towarehouse) {
+        shipmentLine: function (id, bpartner, towarehouse, status) {
             this.addProducts = true
             this.shipmentLines.id = id
             this.shipmentLines.bpartner = bpartner
             this.shipmentLines.towarehouse = towarehouse
+            this.shipmentLines.status = status
+            this.loadShipmentLine()
+        },
+        backToShipment: function () {
+            this.addProducts = false
+            this.shipmentLines.id = ''
+            this.shipmentLines.bpartner = ''
+            this.shipmentLines.towarehouse = ''
+            this.shipmentLines.status = ''
         },
         createShipmentLine: function (){
             axios.post(apiUrl + 'goods-receive/createline/', {
                 shipment_inout_id: this.shipmentLines.id,
                 product_id: document.getElementById('products').value,
                 qty: this.lineCreate.qty,
-                description: this.shipmentLines.description
+                description: this.lineCreate.description
             })
-            .then((response) => {
+            .then(() => {
                 this.showProductLine = false
-                console.log(response)
+                this.lineCreate.qty = ''
+                this.shipmentLines.description = ''
+                setTimeout(function () {
+                    this.loadShipmentLine(this.shipmentLines.id);
+                }.bind(this), 0);
             })
             .catch(e => {
                 console.log(e)
             })
         },
         loadShipmentLine: function () {
-            axios.get(apiUrl + 'goods-receive/shipmentline/')
+            axios.get(apiUrl + 'goods-receive/shipmentline/' + this.shipmentLines.id)
             .then((response) => {
                 this.loadShipmentLines = response.data
             })
@@ -141,8 +157,30 @@ let shipmentline = new Vue ({
                 console.log(e)
             })
         },
-        confirmCreateShipmentLine: function () {
-
+        confirmCreateShipmentLine: function (id) {
+            if(confirm("ถ้ายืนยันแล้วจะไม่สามารถแก้ไขได้อีก \n ยืนยันการรับสินค้า?")){
+                axios.post(apiUrl + 'goods-receive/lineconfirm/' + id)
+                .then((response) => {
+                    let Checked = response.data.result
+                    if(!Checked){
+                        alert("ไม่มีรายการสินค้า ไม่สามารถยืนยันการรับรายการสินค้าได้!")
+                    }else{
+                        this.addProducts = false
+                    }
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+            }
+        },
+        shipmentLineDel: function (id, index) {
+            axios.post(apiUrl + 'goods-receive/delete/' + id)
+            .then(() => {
+                this.loadShipmentLines.splice(index,1)
+            })
+            .catch (e => {
+                console.log(e)
+            })
         },
         loadProduct: function () {
             axios.get(apiUrl + 'products/all?org=' + localStorage.getItem('ORG'))
@@ -156,6 +194,7 @@ let shipmentline = new Vue ({
         }
     }
 })
+
 
 let users = new Vue ({
     el: '#users',
