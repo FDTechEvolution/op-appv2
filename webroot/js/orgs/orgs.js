@@ -37,7 +37,7 @@ let orgs = new Vue ({
             axios.post(apiUrl + 'orgs/create', {
                 name: this.name,
                 code: this.code,
-                user: localStorage.getItem('USER_ID')
+                user_id: localStorage.getItem('USER_ID')
             })
             .then(() => {
                 this.name = null,
