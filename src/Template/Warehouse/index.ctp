@@ -31,27 +31,29 @@
                                 </div>
                             </div>
                             <hr/>
-                            <div v-if="loading" class="col-12 text-center"><img src="img/loading_v2.gif"></div>
-                            <div v-else-if="warehouses.length == 0" class="col-12 text-center">NO WAREHOUSE...</div>
-                            <div v-else
-                                v-for="(warehouse, index) in warehouses"
-                                v-bind:key="warehouse.index"
-                                class="col-6"
-                            >
-                                <div class="card org-card">
-                                    <div class="card-body org-body-action">
-                                        <strong class="header-org">คลังสินค้า :</strong> {{warehouse.name}}<br/>
-                                        <strong class="header-org">รายละเอียด :</strong> {{warehouse.description}}<br/>
-                                        <div style="display: -webkit-inline-box;">
-                                        <strong class="header-org">สถานะ : </strong>&nbsp;
-                                            <div v-if="warehouse.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
-                                            <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
-                                        </div>
-                                        <hr/>
-                                        <div class="row text-center">
-                                            <div class="col-4"><button class="btn btn-info btn-block" type="submit" @click=""><i class="mdi mdi-format-list-bulleted"></i> ดูรายการ</button></div>
-                                            <div class="col-4"><button class="btn btn-success btn-block" type="submit" @click="showEditing(warehouse.id,warehouse.name,warehouse.description,warehouse.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
-                                            <div class="col-4"><button class="btn btn-warning btn-block" type="submit" @click="delWarehouse(warehouse.id, warehouse.name, index)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
+                            <div class="row">
+                                <div v-if="loading" class="col-12 text-center"><img src="img/loading_v2.gif"></div>
+                                <div v-else-if="warehouses.length == 0" class="col-12 text-center">NO WAREHOUSE...</div>
+                                <div v-else
+                                    v-for="(warehouse, index) in warehouses"
+                                    v-bind:key="warehouse.index"
+                                    class="col-6"
+                                >
+                                    <div class="card org-card">
+                                        <div class="card-body org-body-action">
+                                            <strong class="header-org">คลังสินค้า :</strong> {{warehouse.name}}<br/>
+                                            <strong class="header-org">รายละเอียด :</strong> {{warehouse.description}}<br/>
+                                            <div style="display: -webkit-inline-box;">
+                                            <strong class="header-org">สถานะ : </strong>&nbsp;
+                                                <div v-if="warehouse.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
+                                                <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
+                                            </div>
+                                            <hr/>
+                                            <div class="row text-center">
+                                                <div class="col-4"><button class="btn btn-info btn-block" type="submit" @click=""><i class="mdi mdi-format-list-bulleted"></i> ดูรายการ</button></div>
+                                                <div class="col-4"><button class="btn btn-success btn-block" type="submit" @click="showEditing(warehouse.id,warehouse.name,warehouse.description,warehouse.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
+                                                <div class="col-4"><button class="btn btn-warning btn-block" type="submit" @click="delWarehouse(warehouse.id, warehouse.name, index)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
