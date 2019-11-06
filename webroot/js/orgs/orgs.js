@@ -1,5 +1,24 @@
 Vue.component('modal', {
-    template: '#modal-template'
+    template: `<transition name="modal">
+                    <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-container">
+
+                        <div class="modal-header">
+                            <slot name="header"></slot>
+                        </div>
+
+                        <div class="modal-body">
+                            <slot name="body"></slot>
+                        </div>
+
+                        <div class="modal-footer">
+                            <slot name="footer"></slot>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </transition>`
 })
 
 let orgs = new Vue ({
@@ -10,9 +29,11 @@ let orgs = new Vue ({
             loading: true,
             name: '',
             code: '',
+            address: '',
             editID: '',
             editname: '',
             editcode: '',
+            editaddress: '',
             active: '',
             orgdelete: false,
             editorg: false,
@@ -37,11 +58,14 @@ let orgs = new Vue ({
             axios.post(apiUrl + 'orgs/create', {
                 name: this.name,
                 code: this.code,
+                address: this.address,
+                org: localStorage.getItem('ORG'),
                 user: localStorage.getItem('USER_ID')
             })
             .then(() => {
                 this.name = null,
-                this.code = null
+                this.code = null,
+                this.address = null,
                 setTimeout(function () {
                     this.loading = true
                     this.loadorgs();
@@ -51,28 +75,31 @@ let orgs = new Vue ({
                 console.log(e)
             })
         },
-        showEditModal: function (id, name, code, isactive) {
+        showEditModal: function (id, name, code, address, isactive) {
             this.showModal = true,
             this.editID = id,
             this.editname = name,
             this.editcode = code,
+            this.editaddress = address,
             this.active = isactive
         },
-        showEdit: function (id, name, code, isactive) {
-            this.editorg = true,
+        showEdit: function (id, name, code, address, isactive) {
+            this.showModal = true,
             this.editID = id,
             this.editname = name,
             this.editcode = code,
+            this.editaddress = address,
             this.active = isactive
         },
         editOrg: function () {
             axios.post(apiUrl + 'orgs/update/' + this.editID, {
                 name: this.editname,
                 code: this.editcode,
+                address: this.editaddress,
                 isactive: this.active
             })
             .then(() => {
-                this.editorg = false
+                this.showModal = false
                 setTimeout(function () {
                     this.loading = true
                     this.loadorgs();
@@ -99,26 +126,26 @@ let orgs = new Vue ({
     }
 })
 
-let users = new Vue ({
-    el: '#users',
-    data () {
-        return {
-            name: '',
-            mobile: '',
-            email: ''
-        }
-    },
-    mounted () {
-        this.loadUser()
-    },
-    methods: {
-        loadUser: function () {
-            axios.get(apiUrl + 'users/get/' + localStorage.getItem('USER_ID'))
-            .then((response) => {
-                this.name = response.data.name,
-                this.mobile = response.data.mobile,
-                this.email = response.data.email
-            })
-        }
-    }
-})
+// let users = new Vue ({
+//     el: '#users',
+//     data () {
+//         return {
+//             name: '',
+//             mobile: '',
+//             email: ''
+//         }
+//     },
+//     mounted () {
+//         this.loadUser()
+//     },
+//     methods: {
+//         loadUser: function () {
+//             axios.get(apiUrl + 'users/get/' + localStorage.getItem('USER_ID'))
+//             .then((response) => {
+//                 this.name = response.data.name,
+//                 this.mobile = response.data.mobile,
+//                 this.email = response.data.email
+//             })
+//         }
+//     }
+// })
