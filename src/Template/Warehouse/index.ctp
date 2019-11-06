@@ -32,7 +32,7 @@
                             </div>
                             <hr/>
                             <div v-if="loading" class="col-12 text-center"><img src="img/loading_v2.gif"></div>
-                            <div v-else-if="warehouses == 0" class="col-12 text-center">NO WAREHOUSE...</div>
+                            <div v-else-if="warehouses.length == 0" class="col-12 text-center">NO WAREHOUSE...</div>
                             <div v-else
                                 v-for="(warehouse, index) in warehouses"
                                 v-bind:key="warehouse.index"
