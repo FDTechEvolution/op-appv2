@@ -31,6 +31,64 @@
                                 </div>
                             </div>
                             <hr/>
+                            <div class="row">
+                                <div v-if="loading" class="col-12 text-center"><img src="img/loading_v2.gif"></div>
+                                <div v-else-if="brands.length == 0" class="col-12 text-center">NO Brand...</div>
+                                <div v-else
+                                    v-for="(brand, index) in brands"
+                                    v-bind:key="brand.index"
+                                    class="col-6"
+                                >
+                                    <div class="card org-card">
+                                        <div class="card-body org-body-action">
+                                            <strong class="header-org">ยี่ห้อสินค้า :</strong> {{brand.name}}<br/>
+                                            <strong class="header-org">รายละเอียด :</strong> {{brand.description}}<br/>
+                                            <div style="display: -webkit-inline-box;">
+                                            <strong class="header-org">สถานะ : </strong>&nbsp;
+                                                <div v-if="brand.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
+                                                <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
+                                            </div><br/>
+                                            <hr/>
+                                            <div class="row text-center">
+                                                <div class="col-6"><button class="btn btn-success btn-block" type="submit" @click="showEdit(brand.id,brand.name,brand.description,brand.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
+                                                <div class="col-6"><button class="btn btn-warning btn-block" type="submit" @click="brandDelete(brand.id,brand.name,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <modal v-if="showCreate" @close="showCreate = false">
+                                <h3 slot="header">เพิ่มยี่ห้อสินค้า</h3>
+                                <div slot="body">
+                                    <div style="color: #dd0000;">{{nameDuplicate}}</div>
+                                    <input v-model="createBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อประเภท / กลุ่มสินค้า">
+                                    <textarea v-model="createBrand.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
+                                    <div class="radio radio-info form-check-inline">
+                                        <input v-model="createBrand.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
+                                        <input v-model="createBrand.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
+                                    </div>
+                                </div>
+                                <div slot="footer">
+                                    <button class="btn btn-success" @click="brandCreate()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                                    <button class="btn btn-warning" @click="closeCreate()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                </div>
+                            </modal>
+                            <modal v-if="showModal" @close="showModal = false">
+                                <h3 slot="header">เพิ่มยี่ห้อสินค้า</h3>
+                                <div slot="body">
+                                    <div style="color: #dd0000;">{{nameDuplicate}}</div>
+                                    <input v-model="editBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อประเภท / กลุ่มสินค้า">
+                                    <textarea v-model="editBrand.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
+                                    <div class="radio radio-info form-check-inline">
+                                        <input v-model="editBrand.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
+                                        <input v-model="editBrand.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
+                                    </div>
+                                </div>
+                                <div slot="footer">
+                                    <button class="btn btn-success" @click="brandEdit()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                                    <button class="btn btn-warning" @click="closeEdit()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                </div>
+                            </modal>
                         </div>
                     </div>                
                 </div>

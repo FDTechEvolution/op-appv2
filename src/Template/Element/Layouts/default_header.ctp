@@ -176,6 +176,9 @@
                                         <a href="<?=SITEURL?>product-cat">ประเภท/กลุ่มสินค้า</a>
                                     </li>
                                     <li>
+                                        <a href="<?=SITEURL?>brands">ยี่ห้อสินค้า</a>
+                                    </li>
+                                    <li>
                                         <a href="<?=SITEURL?>product">สินค้า/ต้นทุน</a>
                                     </li>
 
