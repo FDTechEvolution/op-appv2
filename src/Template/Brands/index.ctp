@@ -61,7 +61,7 @@
                                 <h3 slot="header">เพิ่มยี่ห้อสินค้า</h3>
                                 <div slot="body">
                                     <div style="color: #dd0000;">{{nameDuplicate}}</div>
-                                    <input v-model="createBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อประเภท / กลุ่มสินค้า">
+                                    <input v-model="createBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อยี่ห้อสินค้า">
                                     <textarea v-model="createBrand.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
                                     <div class="radio radio-info form-check-inline">
                                         <input v-model="createBrand.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
@@ -77,7 +77,7 @@
                                 <h3 slot="header">เพิ่มยี่ห้อสินค้า</h3>
                                 <div slot="body">
                                     <div style="color: #dd0000;">{{nameDuplicate}}</div>
-                                    <input v-model="editBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อประเภท / กลุ่มสินค้า">
+                                    <input v-model="editBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อยี่ห้อสินค้า">
                                     <textarea v-model="editBrand.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
                                     <div class="radio radio-info form-check-inline">
                                         <input v-model="editBrand.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>

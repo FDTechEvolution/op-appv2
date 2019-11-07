@@ -63,16 +63,53 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <!-- Create Brand -->
+                    <modal v-if="showCreateBrand" @close="showCreateBrand = false">
+                        <h3 slot="header">เพิ่มยี่ห้อสินค้า</h3>
+                        <div slot="body">
+                            <div style="color: #dd0000;">{{nameDuplicate}}</div>
+                            <input v-model="createBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อยี่ห้อสินค้า">
+                            <textarea v-model="createBrand.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
+                            <div class="radio radio-info form-check-inline">
+                                <input v-model="createBrand.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
+                                <input v-model="createBrand.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
+                            </div>
+                        </div>
+                        <div slot="footer">
+                            <button class="btn btn-success" @click="brandCreate()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-warning" @click="closeCreateBrand()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                        </div>
+                    </modal>
+
+                <!-- Create Category -->
+                    <modal v-if="showCreateCategory" @close="showCreateCategory = false">
+                        <h3 slot="header">เพิ่มประเภท / กลุ่มสินค้า</h3>
+                        <div slot="body">
+                            <div style="color: #dd0000;">{{nameDuplicate}}</div>
+                            <input v-model="createCategory.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อประเภท / กลุ่มสินค้า">
+                            <textarea v-model="createCategory.description" class="form-control frm-product-category" name="description" id="description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
+                            <div class="radio radio-info form-check-inline">
+                                <input v-model="createCategory.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
+                                <input v-model="createCategory.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
+                            </div>
+                        </div>
+                        <div slot="footer">
+                            <button class="btn btn-success" @click="creatProductCategory()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-warning" @click="closeCreateCategory()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                        </div>
+                    </modal>
+
                 <!-- Create Product -->
                     <modal v-if="showCreate" @close="showCreate = false">
                         <h3 slot="header">เพิ่มรายการสินค้า</h3>
                         <div slot="body">
                             <div class="row">
                                 <div class="col-3 product-add-title">หมวดหมู่</div>
-                                <div v-if="productCate == 0" class="col-9 no-content">ไม่มีหมวดหมู่ <a href="#">สร้างหมวดหมู่</a></div>
+                                <div v-if="productCate == 0" class="col-9 no-content">ไม่มีหมวดหมู่ <a href="#" @click="addCategory()">สร้างหมวดหมู่</a></div>
                                 <div v-else class="col-9">
-                                    <select id="category" class="form-control frm-product-category">
-                                        <option style="color: #ddd;">เลือกหมวดหมู่</option>
+                                    <select id="category" class="form-control frm-product-category" required>
+                                        <option style="color: #ddd;" value="">เลือกหมวดหมู่</option>
                                         <option
                                             v-for="(category, index) in productCate"
                                             v-bind:key="category.index"
@@ -83,10 +120,10 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ยี่ห้อ</div>
-                                <div v-if="productBrand == 0" class="col-9 no-content">ไม่มียี่ห้อ <a href="#">สร้างยี่ห้อ</a></div>
+                                <div v-if="productBrand == 0" class="col-9 no-content">ไม่มียี่ห้อ <a href="#" @click="addBrand()">สร้างยี่ห้อ</a></div>
                                 <div v-else class="col-9">
-                                    <select id="brand" class="form-control frm-product-category">
-                                        <option style="color: #ddd;">เลือกยี่ห้อ</option>
+                                    <select id="brand" class="form-control frm-product-category" required>
+                                        <option style="color: #ddd;" value="">เลือกยี่ห้อ</option>
                                         <option
                                             v-for="(brand, index) in productBrand"
                                             v-bind:key="brand.index"
@@ -97,11 +134,11 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="create.name" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="create.name" v-bind:class="{unactive: duplicated.name}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="create.code" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="create.code" v-bind:class="{unactive: duplicated.code}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>
@@ -143,10 +180,9 @@
                         <div v-else slot="body">
                             <div class="row">
                                 <div class="col-3 product-add-title">หมวดหมู่</div>
-                                <div v-if="productCate == 0" class="col-9 no-content">ไม่มีหมวดหมู่ <a href="#">สร้างหมวดหมู่</a></div>
-                                <div v-else class="col-9">
-                                    <select id="category" v-model="selected.category" class="form-control frm-product-category">
-                                        <option style="color: #ddd;">เลือกหมวดหมู่</option>
+                                <div class="col-9">
+                                    <select id="category" v-model="selected.category" class="form-control frm-product-category" required="">
+                                        <option style="color: #ddd;" value="">เลือกหมวดหมู่</option>
                                         <option
                                             v-for="(category, index) in productCate"
                                             v-bind:key="category.index"
@@ -157,10 +193,9 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ยี่ห้อ</div>
-                                <div v-if="productBrand == 0" class="col-9 no-content">ไม่มียี่ห้อ <a href="#">สร้างยี่ห้อ</a></div>
-                                <div v-else class="col-9">
-                                    <select id="brand" v-model="selected.brand" class="form-control frm-product-category">
-                                        <option style="color: #ddd;">เลือกยี่ห้อ</option>
+                                <div class="col-9">
+                                    <select id="brand" v-model="selected.brand" class="form-control frm-product-category" required="">
+                                        <option style="color: #ddd;" value="">เลือกยี่ห้อ</option>
                                         <option
                                             v-for="(brand, index) in productBrand"
                                             v-bind:key="brand.index"
@@ -171,11 +206,11 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="update.name" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="update.name" v-bind:class="{unactive: duplicated.name}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="update.code" v-bind:class="{unactive: duplicated}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="update.code" v-bind:class="{unactive: duplicated.code}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>

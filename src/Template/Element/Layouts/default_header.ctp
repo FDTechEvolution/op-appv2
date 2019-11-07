@@ -173,7 +173,7 @@
                             <li>
                                 <ul>
                                     <li>
-                                        <a href="<?=SITEURL?>product-cat">ประเภท/กลุ่มสินค้า</a>
+                                        <a href="<?=SITEURL?>product-categories">ประเภท/กลุ่มสินค้า</a>
                                     </li>
                                     <li>
                                         <a href="<?=SITEURL?>brands">ยี่ห้อสินค้า</a>

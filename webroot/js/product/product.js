@@ -46,18 +46,31 @@ let showproduct = new Vue ({
                 description: '',
                 isactive: ''
             },
+            createBrand: {
+                name: '',
+                description: '',
+                isactive: ''
+            },
+            createCategory: {
+                name: '',
+                description: '',
+                isactive: ''
+            },
             selected: {
                 category: '',
                 brand: ''
             },
             showCreate: false,
+            showCreateBrand: false,
+            showCreateCategory: false,
             showEditModal: false,
             loading: true,
             loadingEdit: true,
             duplicated: {
                 name: false,
                 code: false
-            }
+            },
+            nameDuplicate: ''
         }
     },
     mounted () {
@@ -90,12 +103,20 @@ let showproduct = new Vue ({
             })
             .then((response) => {
                 let Checked = response.data.result
+                let Reason = response.data.msg
                 if(!Checked) {
-                    this.duplicate = "ชื่อสินค้า หรือ รหัส ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
-                    this.duplicated = true
+                    if(Reason === 'Name Duplicate'){
+                        this.duplicate = "ชื่อสินค้า ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
+                        this.duplicated.name = true
+                    }else if(Reason === 'Code Duplicate'){
+                        this.duplicate = "รหัสสินค้า ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
+                        this.duplicated.code = true
+                        this.duplicated.name = false
+                    }
                 } else {
                     this.duplicate = ''
-                    this.duplicated = false
+                    this.duplicated.name = false
+                    this.duplicated.code = false
                     this.showCreate = false
                     this.create.name = ''
                     this.create.code = ''
@@ -144,19 +165,16 @@ let showproduct = new Vue ({
             })
             .then((response) => {
                 let Checked = response.data.result
-                let seterror = ''
+                let Reason = response.data.msg
                 if(!Checked) {
-                    switch(response.data.stat){
-                        case 1:
-                            seterror = "ชื่อสินค้า"
-                            this.duplicated.name = true
-                        break
-                        case 2:
-                            seterror = "รหัส"
-                            this.duplicated.code = true
-                        break
+                    if(Reason === 'Name Duplicate'){
+                        this.duplicate = "ชื่อสินค้า ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
+                        this.duplicated.name = true
+                    }else if(Reason === 'Code Duplicate'){
+                        this.duplicate = "รหัสสินค้า ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
+                        this.duplicated.code = true
+                        this.duplicated.name = false
                     }
-                    this.duplicate = seterror + " ในประเภทเดียวกันมีการใช้ซ้ำ กรุณาเปลี่ยน..."
                 } else {
                     this.duplicate = ''
                     this.duplicated.name = false
@@ -180,6 +198,8 @@ let showproduct = new Vue ({
                 })
             }
         },
+
+        // Category functions
         loadCategory: function () {
             axios.get(apiUrl + 'product-categories/getcategories/' + localStorage.getItem('ORG'))
             .then((response) => {
@@ -188,6 +208,79 @@ let showproduct = new Vue ({
             .catch (e => {
                 console.log(e)
             })
+        },
+        creatProductCategory: function () {
+            axios.post(apiUrl + 'product-categories/create', {
+                org_id: localStorage.getItem('ORG'),
+                name: this.createCategory.name,
+                description: this.createCategory.description,
+                isactive: this.createCategory.isactive
+            })
+            .then((response) => {
+                let nameChecked = response.data.result
+                if(!nameChecked) {
+                    this.nameDuplicate = 'ชื่อประเภท/กลุ่มสินค้า ไม่สามารถใช้ซ้ำได้...กรุณาเปลี่ยน'
+                }else{
+                    this.nameDuplicate = ''
+                    this.showCreateCategory = false
+                    this.name = null
+                    this.description = null
+                    this.isactive = null
+                    setTimeout(function () {
+                        this.loadCategory();
+                    }.bind(this), 0);
+                    this.showCreate = true
+                }
+            })
+            .catch (e => {
+                console.log(e)
+            })
+        },
+        addCategory: function () {
+            this.showCreate = false
+            this.showCreateCategory = true
+        },
+        closeCreateCategory: function () {
+            this.showCreateCategory = false
+            this.createCategory.name = ''
+            this.createCategory.description = ''
+            this.createCategory.isactive = ''
+        },
+
+        // Brand function
+        addBrand: function () {
+            this.showCreate = false
+            this.showCreateBrand = true
+        },
+        brandCreate: function () {
+            axios.post(apiUrl + 'brands/create', {
+              name: this.createBrand.name,
+              description: this.createBrand.description,
+              isactive: this.createBrand.isactive,
+              org_id: localStorage.getItem('ORG')
+            })
+            .then((response) => {
+              let nameChecked = response.data.result
+                if(!nameChecked) {
+                    this.nameDuplicate = 'ชื่อยี่ห้อสินค้า ไม่สามารถใช้ซ้ำได้...กรุณาเปลี่ยน'
+                }else{
+                    this.nameDuplicate = ''
+                    this.createBrand.name = ''
+                    this.createBrand.description = ''
+                    this.createBrand.isactive = ''
+                    this.showCreateBrand = false
+                    setTimeout(function () {
+                        this.loadBrand();
+                    }.bind(this), 0);
+                    this.showCreate = true
+                }
+            })
+        },
+        closeCreateBrand: function () {
+            this.showCreateBrand = false
+            this.createBrand.name = ''
+            this.createBrand.description = ''
+            this.createBrand.isactive = ''
         },
         loadBrand: function () {
             axios.get(apiUrl + 'brands/all?org=' + localStorage.getItem('ORG'))
