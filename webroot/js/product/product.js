@@ -70,6 +70,16 @@ let showproduct = new Vue ({
                 name: false,
                 code: false
             },
+            validate: {
+                category: false,
+                brand: false,
+                name: false,
+                code: false,
+                cost: false,
+                price: false,
+                isactive: false,
+                msg: 'กรุณาใส่รายละเอียดให้ครบด้วยค่ะ...'
+            },
             nameDuplicate: ''
         }
     },
@@ -88,6 +98,56 @@ let showproduct = new Vue ({
                 console.log(e)
             })
             .finally(() => this.loading = false)
+        },
+        chkvalidateCreate: function () {
+            if(document.getElementById('category').value == ''){
+                this.validate.category = true
+            }else if(document.getElementById('brand').value == ''){
+                this.validate.brand = true
+                this.validate.category = false
+            }else if(this.create.name == ''){
+                this.validate.name = true
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.create.code == ''){
+                this.validate.code = true
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.create.cost == ''){
+                this.validate.cost = true
+                this.validate.code = false
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.create.price == ''){
+                this.validate.price = true
+                this.validate.cost = false
+                this.validate.code = false
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.create.isactive == ''){
+                this.validate.isactive = true
+                this.validate.price = false
+                this.validate.cost = false
+                this.validate.code = false
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else{
+                this.creatProduct()
+            }
+        },
+        closeCreate: function () {
+            this.showCreate = false
+            this.validate.isactive = false
+            this.validate.price = false
+            this.validate.cost = false
+            this.validate.code = false
+            this.validate.name = false
+            this.validate.brand = false
+            this.validate.category = false
         },
         creatProduct: function () {
             axios.post(apiUrl + 'products/create', {
@@ -150,6 +210,56 @@ let showproduct = new Vue ({
                 console.log(e)
             })
             .finally(() => this.loadingEdit = false)
+        },
+        closeEdit: function () {
+            this.showEditModal = false
+            this.validate.isactive = false
+            this.validate.price = false
+            this.validate.cost = false
+            this.validate.code = false
+            this.validate.name = false
+            this.validate.brand = false
+            this.validate.category = false
+        },
+        chkvalidateUpdate: function (id) {
+            if(document.getElementById('category').value == ''){
+                this.validate.category = true
+            }else if(document.getElementById('brand').value == ''){
+                this.validate.brand = true
+                this.validate.category = false
+            }else if(this.update.name == ''){
+                this.validate.name = true
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.update.code == ''){
+                this.validate.code = true
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.update.cost == ''){
+                this.validate.cost = true
+                this.validate.code = false
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.update.price == ''){
+                this.validate.price = true
+                this.validate.cost = false
+                this.validate.code = false
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else if(this.update.isactive == ''){
+                this.validate.isactive = true
+                this.validate.price = false
+                this.validate.cost = false
+                this.validate.code = false
+                this.validate.name = false
+                this.validate.brand = false
+                this.validate.category = false
+            }else{
+                this.updateProduct(id)
+            }
         },
         updateProduct: function (update) {
             axios.post(apiUrl + 'products/update/' + update, {

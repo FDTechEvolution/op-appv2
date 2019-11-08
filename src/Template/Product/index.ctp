@@ -108,7 +108,7 @@
                                 <div class="col-3 product-add-title">หมวดหมู่</div>
                                 <div v-if="productCate == 0" class="col-9 no-content">ไม่มีหมวดหมู่ <a href="#" @click="addCategory()">สร้างหมวดหมู่</a></div>
                                 <div v-else class="col-9">
-                                    <select id="category" class="form-control frm-product-category" required>
+                                    <select id="category" class="form-control frm-product-category" v-bind:class="{nodata: validate.category}">
                                         <option style="color: #ddd;" value="">เลือกหมวดหมู่</option>
                                         <option
                                             v-for="(category, index) in productCate"
@@ -122,7 +122,7 @@
                                 <div class="col-3 product-add-title">ยี่ห้อ</div>
                                 <div v-if="productBrand == 0" class="col-9 no-content">ไม่มียี่ห้อ <a href="#" @click="addBrand()">สร้างยี่ห้อ</a></div>
                                 <div v-else class="col-9">
-                                    <select id="brand" class="form-control frm-product-category" required>
+                                    <select id="brand" class="form-control frm-product-category" v-bind:class="{nodata: validate.brand}">
                                         <option style="color: #ddd;" value="">เลือกยี่ห้อ</option>
                                         <option
                                             v-for="(brand, index) in productBrand"
@@ -134,19 +134,19 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="create.name" v-bind:class="{unactive: duplicated.name}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="create.name" v-bind:class="{unactive: duplicated.name, nodata: validate.name}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="create.code" v-bind:class="{unactive: duplicated.code}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="create.code" v-bind:class="{unactive: duplicated.code, nodata: validate.code}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>
-                                <div class="col-9"><input v-model="create.cost" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
+                                <div class="col-9"><input v-model="create.cost" v-bind:class="{nodata: validate.cost}" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาขาย</div>
-                                <div class="col-9"><input v-model="create.price" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
+                                <div class="col-9"><input v-model="create.price" v-bind:class="{nodata: validate.price}" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รายละเอียด</div>
@@ -154,7 +154,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">สถานะ</div>
-                                <div class="col-9">
+                                <div class="col-9" v-bind:class="{radionodata: validate.isactive}" style="padding-top: 5px;">
                                     <div class="radio radio-info form-check-inline">
                                         <input v-model="create.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
                                         <input v-model="create.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
@@ -166,10 +166,15 @@
                                     <p style="color: #dd0000; margin-bottom: 0; margin-top: 20px;">{{duplicate}}</p>
                                 </div>
                             </div>
+                            <div v-if="validate.category || validate.brand || validate.name || validate.code || validate.cost || validate.price || validate.isactive" class="row">
+                                <div class="col-12 text-center">
+                                    <p style="color: #dd0000; margin-bottom: 0; margin-top: 20px;">{{validate.msg}}</p>
+                                </div>
+                            </div>
                         </div>
                         <div slot="footer">
-                            <button class="btn btn-success" @click="creatProduct()"><i class="mdi mdi-content-save"></i> บันทึก</button>
-                            <button class="btn btn-warning" @click="showCreate = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                            <button class="btn btn-success" @click="chkvalidateCreate()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-warning" @click="closeCreate()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
                     </modal>
 
@@ -181,7 +186,7 @@
                             <div class="row">
                                 <div class="col-3 product-add-title">หมวดหมู่</div>
                                 <div class="col-9">
-                                    <select id="category" v-model="selected.category" class="form-control frm-product-category" required="">
+                                    <select id="category" v-model="selected.category" v-bind:class="{nodata: validate.category}" class="form-control frm-product-category">
                                         <option style="color: #ddd;" value="">เลือกหมวดหมู่</option>
                                         <option
                                             v-for="(category, index) in productCate"
@@ -194,7 +199,7 @@
                             <div class="row">
                                 <div class="col-3 product-add-title">ยี่ห้อ</div>
                                 <div class="col-9">
-                                    <select id="brand" v-model="selected.brand" class="form-control frm-product-category" required="">
+                                    <select id="brand" v-model="selected.brand" v-bind:class="{nodata: validate.brand}" class="form-control frm-product-category" >
                                         <option style="color: #ddd;" value="">เลือกยี่ห้อ</option>
                                         <option
                                             v-for="(brand, index) in productBrand"
@@ -206,19 +211,19 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ชื่อสินค้า</div>
-                                <div class="col-9"><input v-model="update.name" v-bind:class="{unactive: duplicated.name}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
+                                <div class="col-9"><input v-model="update.name" v-bind:class="{unactive: duplicated.name, nodata: validate.name}" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อรายการสินค้า"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รหัสสินค้า</div>
-                                <div class="col-9"><input v-model="update.code" v-bind:class="{unactive: duplicated.code}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
+                                <div class="col-9"><input v-model="update.code" v-bind:class="{unactive: duplicated.code, nodata: validate.code}" class="form-control frm-product-category" type="text" name="code" id="code" required="" placeholder="รหัส"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาต้นทุน</div>
-                                <div class="col-9"><input v-model="update.cost" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
+                                <div class="col-9"><input v-model="update.cost" v-bind:class="{nodata: validate.cost}" class="form-control frm-product-category" type="number" name="cost" id="cost" required="" placeholder="ราคาต้นทุน (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">ราคาขาย</div>
-                                <div class="col-9"><input v-model="update.price" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
+                                <div class="col-9"><input v-model="update.price" v-bind:class="{nodata: validate.price}" class="form-control frm-product-category" type="number" name="price" id="price" required="" placeholder="ราคาขาย (฿)"></div>
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">รายละเอียด</div>
@@ -226,7 +231,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-3 product-add-title">สถานะ</div>
-                                <div class="col-9">
+                                <div class="col-9" v-bind:class="{nodata: validate.isactive}" style="padding-top: 5px;">
                                     <div class="radio radio-info form-check-inline">
                                         <input v-model="update.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
                                         <input v-model="update.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
@@ -238,10 +243,15 @@
                                     <p style="color: #dd0000; margin-bottom: 0; margin-top: 20px;">{{duplicate}}</p>
                                 </div>
                             </div>
+                            <div v-if="validate.category || validate.brand || validate.name || validate.code || validate.cost || validate.price || validate.isactive" class="row">
+                                <div class="col-12 text-center">
+                                    <p style="color: #dd0000; margin-bottom: 0; margin-top: 20px;">{{validate.msg}}</p>
+                                </div>
+                            </div>
                         </div>
                         <div slot="footer">
-                            <button class="btn btn-success" @click="updateProduct(update.id)"><i class="mdi mdi-content-save"></i> บันทึก</button>
-                            <button class="btn btn-warning" @click="showEditModal = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                            <button class="btn btn-success" @click="chkvalidateUpdate(update.id)"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-warning" @click="closeEdit()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
                     </modal>
             </div>
@@ -251,6 +261,8 @@
 
 <style>
     .unactive { border-color: #dd0000; }
+    .nodata { border-color: #dd0000; }
+    .radionodata { border:1px solid #dd0000; border-radius: 5px;}
 </style>
 
 <script>
