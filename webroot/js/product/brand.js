@@ -3,6 +3,7 @@ let brands = new Vue ({
     data () {
         return {
           brands: [],
+          products: [],
           createBrand: {
             name: '',
             description: '',
@@ -14,10 +15,18 @@ let brands = new Vue ({
             description: '',
             isactive: ''
           },
+          deleteBrand: {
+            id: '',
+            name: '',
+            products: '',
+            index: ''
+          },
           nameDuplicate: '',
+          delAll: '',
           loading: true,
           showModal: false,
-          showCreate: false
+          showCreate: false,
+          showDelete: false
         }
     },
     mounted () {
@@ -28,6 +37,7 @@ let brands = new Vue ({
           axios.get(apiUrl + 'brands/all?org=' + localStorage.getItem('ORG'))
           .then((response) => {
             this.brands = response.data
+            this.loadProduct(response.data.id)
           })
           .catch(e => {
             console.log(e)
@@ -82,16 +92,35 @@ let brands = new Vue ({
             console.log(e)
           })
         },
-        brandDelete: function (id, name, index) {
-          if(confirm("ลบยี่ห้อสินค้า : '" + name + "' ยืนยันการลบ ?")){
-            axios.post(apiUrl + 'brands/delete/' + id)
-            .then(() => {
-              this.brands.splice(index,1)
-            })
-            .catch(e => {
-              console.log(e)
-            })
+        confirmDelBrand: function (id, name, products, index) {
+          this.deleteBrand.id = id
+          this.deleteBrand.name = name
+          this.deleteBrand.index = index
+          this.deleteBrand.products = products
+          if(products == 0){
+            this.delAll = true
           }
+          this.showDelete = true
+        },
+        brandDelete: function (id, index) {
+          axios.post(apiUrl + 'brands/delete/' + id)
+          .then(() => {
+            this.brands.splice(index,1)
+            this.delAll = ''
+          })
+          .catch(e => {
+            console.log(e)
+          })
+        },
+        loadProduct: function (brandID){
+          axios.get(apiUrl + 'products/all?brand=' + brandID)
+          .then((response) => {
+            this.products = response.data
+            
+          })
+          .catch(e => {
+            console.log(e)
+          })
         },
         showEdit: function (id, name, description, isactive) {
           this.showModal = true,
@@ -109,6 +138,10 @@ let brands = new Vue ({
         closeEdit: function () {
           this.showModal = false
           this.nameDuplicate = ''
+        },
+        closeDelete: function () {
+          this.delAll = ''
+          this.showDelete = false
         }
     }
 })

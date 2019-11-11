@@ -48,10 +48,11 @@
                                                 <div v-if="brand.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
                                                 <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
                                             </div><br/>
+                                            <strong class="header-org">จำนวนสินค้า :</strong> {{brand.products}} รายการ <a v-if="brand.products != 0" href="" style="color: #000;" @click=""><strong><u>ดูรายการสินค้า</u></strong></a><br/>
                                             <hr/>
                                             <div class="row text-center">
                                                 <div class="col-6"><button class="btn btn-success btn-block" type="submit" @click="showEdit(brand.id,brand.name,brand.description,brand.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
-                                                <div class="col-6"><button class="btn btn-warning btn-block" type="submit" @click="brandDelete(brand.id,brand.name,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
+                                                <div class="col-6"><button class="btn btn-warning btn-block" type="submit" @click="confirmDelBrand(brand.id,brand.name,brand.products,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
                                             </div>
                                         </div>
                                     </div>
@@ -87,6 +88,32 @@
                                 <div slot="footer">
                                     <button class="btn btn-success" @click="brandEdit()"><i class="mdi mdi-content-save"></i> บันทึก</button>
                                     <button class="btn btn-warning" @click="closeEdit()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                </div>
+                            </modal>
+                            <modal v-if="showDelete" @close="showDelete = false">
+                                <h3 slot="header">ลบยี่ห้อสินค้า {{deleteBrand.name}}</h3>
+                                <div slot="body">
+                                    <div v-if="deleteBrand.products != 0" class="row">
+                                        <div class="col-12 text-center"><img src="img/Recycle_Bin.png" width="60"></div><br>
+                                        <div class="col-12 text-center">มีรายการสินค้าอยู่ในยี่ห้อนี้จำนวน <u>{{deleteBrand.products}} รายการ</u> กรุณาจัดการสินค้าก่อนลบยี่ห้อสินค้า</div>
+                                        <div class="col-12 text-center">หรือ</div>
+                                        <div class="col-12 text-center"><input v-model="delAll" type="checkbox"> ลบสินค้าทั้งหมดในรายการยี่ห้อนี้</div>
+                                    </div>
+                                    <div v-else class="row">
+                                        <div class="col-12 text-center"><img src="img/Recycle_Bin.png" width="60"></div>
+                                        <div class="col-12 text-center" style="color: #dd0000;">ยืนยันการลบยี่ห้อสินค้านี้?</div>
+                                        <input v-model="delAll" type="text" value="pass" style="display: none;">
+                                    </div>
+                                </div>
+                                <div slot="footer">
+                                    <div v-if="delAll == ''">
+                                        <button class="btn btn-light"><i class="mdi mdi-content-save" disabled></i> ยืนยัน</button>
+                                        <button class="btn btn-warning" @click="closeDelete()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                    </div>
+                                    <div v-else>
+                                        <button class="btn btn-success" @click="brandDelete(brand.id,index)"><i class="mdi mdi-content-save"></i> ยืนยัน</button>
+                                        <button class="btn btn-warning" @click="closeDelete()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                    </div>
                                 </div>
                             </modal>
                         </div>
