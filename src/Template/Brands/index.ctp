@@ -48,7 +48,7 @@
                                                 <div v-if="brand.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
                                                 <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
                                             </div><br/>
-                                            <strong class="header-org">จำนวนสินค้า :</strong> {{brand.products}} รายการ <a v-if="brand.products != 0" href="#" style="color: #000;" @click="loadProduct(brand.id,brand.name)"><strong><u>ดูรายการสินค้า</u></strong></a><br/>
+                                            <strong class="header-org">จำนวนสินค้า :</strong> {{brand.products}} รายการ <button v-if="brand.products != 0" class="a-button" @click="loadProduct(brand.id,brand.name)"><strong><u>ดูรายการสินค้า</u></strong></button><br/>
                                             <hr/>
                                             <div class="row text-center">
                                                 <div class="col-6"><button class="btn btn-success btn-block" type="submit" @click="showEdit(brand.id,brand.name,brand.description,brand.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
