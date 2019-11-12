@@ -393,7 +393,7 @@ let showproduct = new Vue ({
             this.createBrand.isactive = ''
         },
         loadBrand: function () {
-            axios.get(apiUrl + 'brands/all?org=' + localStorage.getItem('ORG'))
+            axios.get(apiUrl + 'brands/all?org=' + localStorage.getItem('ORG') + '&active=yes')
             .then((response) => {
                 this.productBrand = response.data
             })

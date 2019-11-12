@@ -23,10 +23,13 @@ let brands = new Vue ({
           },
           nameDuplicate: '',
           delAll: '',
+          brandNameInProduct: '',
           loading: true,
           showModal: false,
           showCreate: false,
-          showDelete: false
+          showDelete: false,
+          loadingProduct: true,
+          showBrandProduct: false
         }
     },
     mounted () {
@@ -37,7 +40,6 @@ let brands = new Vue ({
           axios.get(apiUrl + 'brands/all?org=' + localStorage.getItem('ORG'))
           .then((response) => {
             this.brands = response.data
-            this.loadProduct(response.data.id)
           })
           .catch(e => {
             console.log(e)
@@ -105,6 +107,7 @@ let brands = new Vue ({
         brandDelete: function (id, index) {
           axios.post(apiUrl + 'brands/delete/' + id)
           .then(() => {
+            this.showDelete = false
             this.brands.splice(index,1)
             this.delAll = ''
           })
@@ -112,15 +115,17 @@ let brands = new Vue ({
             console.log(e)
           })
         },
-        loadProduct: function (brandID){
-          axios.get(apiUrl + 'products/all?brand=' + brandID)
+        loadProduct: function (brandID, name){
+          this.brandNameInProduct = name
+          this.showBrandProduct = true
+          axios.get(apiUrl + 'products/all?brand=' + brandID + '&active=yes')
           .then((response) => {
             this.products = response.data
-            
           })
           .catch(e => {
             console.log(e)
           })
+          .finally(() => this.loadingProduct = false)
         },
         showEdit: function (id, name, description, isactive) {
           this.showModal = true,
@@ -142,6 +147,10 @@ let brands = new Vue ({
         closeDelete: function () {
           this.delAll = ''
           this.showDelete = false
+        },
+        closeBrandProduct: function () {
+          this.showBrandProduct = false
+          this.loadingProduct = true
         }
     }
 })
@@ -195,4 +204,27 @@ Vue.component('modal', {
       </div>
     </div>
   </transition>`
+})
+
+Vue.component('show-products', {
+  template: `<transition name="modal">
+  <div class="modal-mask">
+    <div class="modal-wrapper-product">
+      <div class="modal-container-product">
+
+        <div class="modal-header">
+          <slot name="header"></slot>
+        </div>
+
+        <div class="modal-body">
+          <slot name="body"></slot>
+        </div>
+
+        <div class="modal-footer">
+          <slot name="footer"></slot>
+        </div>
+      </div>
+    </div>
+  </div>
+</transition>`
 })

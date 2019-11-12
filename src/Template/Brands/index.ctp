@@ -48,7 +48,7 @@
                                                 <div v-if="brand.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
                                                 <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
                                             </div><br/>
-                                            <strong class="header-org">จำนวนสินค้า :</strong> {{brand.products}} รายการ <a v-if="brand.products != 0" href="" style="color: #000;" @click=""><strong><u>ดูรายการสินค้า</u></strong></a><br/>
+                                            <strong class="header-org">จำนวนสินค้า :</strong> {{brand.products}} รายการ <a v-if="brand.products != 0" href="#" style="color: #000;" @click="loadProduct(brand.id,brand.name)"><strong><u>ดูรายการสินค้า</u></strong></a><br/>
                                             <hr/>
                                             <div class="row text-center">
                                                 <div class="col-6"><button class="btn btn-success btn-block" type="submit" @click="showEdit(brand.id,brand.name,brand.description,brand.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
@@ -95,9 +95,9 @@
                                 <div slot="body">
                                     <div v-if="deleteBrand.products != 0" class="row">
                                         <div class="col-12 text-center"><img src="img/Recycle_Bin.png" width="60"></div><br>
-                                        <div class="col-12 text-center">มีรายการสินค้าอยู่ในยี่ห้อนี้จำนวน <u>{{deleteBrand.products}} รายการ</u> กรุณาจัดการสินค้าก่อนลบยี่ห้อสินค้า</div>
+                                        <div class="col-12 text-center">มีรายการสินค้าอยู่ในยี่ห้อนี้จำนวน <strong><u>{{deleteBrand.products}} รายการ</u></strong> กรุณาจัดการสินค้าก่อนลบยี่ห้อสินค้า</div>
                                         <div class="col-12 text-center">หรือ</div>
-                                        <div class="col-12 text-center"><input v-model="delAll" type="checkbox"> ลบสินค้าทั้งหมดในรายการยี่ห้อนี้</div>
+                                        <div class="col-12 text-center"><input v-model="delAll" type="checkbox"> ลบสินค้าทั้งหมดในรายการยี่ห้อ <strong><u>{{deleteBrand.name}}</u></strong> นี้</div>
                                     </div>
                                     <div v-else class="row">
                                         <div class="col-12 text-center"><img src="img/Recycle_Bin.png" width="60"></div>
@@ -111,11 +111,46 @@
                                         <button class="btn btn-warning" @click="closeDelete()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                                     </div>
                                     <div v-else>
-                                        <button class="btn btn-success" @click="brandDelete(brand.id,index)"><i class="mdi mdi-content-save"></i> ยืนยัน</button>
+                                        <button class="btn btn-success" @click="brandDelete(deleteBrand.id,deleteBrand.index)"><i class="mdi mdi-content-save"></i> ยืนยัน</button>
                                         <button class="btn btn-warning" @click="closeDelete()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                                     </div>
                                 </div>
                             </modal>
+
+                            <!-- Show Products -->
+                            <show-products v-if="showBrandProduct" @close="showBrandProduct = false">
+                                <h3 slot="header">รายการสินค้ายี่ห้อ {{brandNameInProduct}}</h3>
+                                <div slot="body">
+                                    <table style="width: 100%;">
+                                        <thead style="border-bottom: 1px solid #333; margin-bottom: 10px;">
+                                            <tr>
+                                                <th class="text-center" style="width: 10%;">ลำดับ</th>
+                                                <th style="width: 30%;">ชื่อสินค้า</th>
+                                                <th style="width: 30%;">หมวดหมู่</th>
+                                                <th class="text-center" style="width: 15%;">ต้นทุน (฿)</th>
+                                                <th class="text-center" style="width: 15%;">ราคา (฿)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if='loadingProduct'><td colspan="5" class="text-center"><img src="img/loading_v2.gif"></td></tr>
+                                            <tr v-else-if="products.length == 0" class="text-center"><td colspan="5" class="text-center">NO PRODUCT...</td></tr>
+                                            <tr v-else
+                                                v-for="(product, index) in products"
+                                                v-bind:key="product.index"
+                                            >
+                                                <td class="text-center">{{index+1}}</td>
+                                                <td>{{product.name}}</td>
+                                                <td>{{product.category}}</td>
+                                                <td class="text-center">{{product.cost}}</td>
+                                                <td class="text-center">{{product.price}}</td>                             
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div slot="footer">
+                                    <button class="btn btn-warning" @click="closeBrandProduct()"><i class="mdi mdi-close-box"></i> ปิด</button>
+                                </div>
+                            </show-products>
                         </div>
                     </div>                
                 </div>
