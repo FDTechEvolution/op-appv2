@@ -59,7 +59,7 @@
                                 </div>
                             </div>
 
-                            <!-- Create Category -->
+                            <!-- Create Warehouse -->
                             <modal v-if="showCreate" @close="showCreate = false">
                                 <h3 slot="header">เพิ่มคลังสินค้า</h3>
                                 <div slot="body">

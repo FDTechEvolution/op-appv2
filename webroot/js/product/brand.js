@@ -118,7 +118,7 @@ let brands = new Vue ({
         loadProduct: function (brandID, name){
           this.brandNameInProduct = name
           this.showBrandProduct = true
-          axios.get(apiUrl + 'products/all?brand=' + brandID + '&active=yes')
+          axios.get(apiUrl + 'products/all?brand=' + brandID)
           .then((response) => {
             this.products = response.data
           })

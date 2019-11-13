@@ -75,7 +75,7 @@
                                 </div>
                             </modal>
                             <modal v-if="showModal" @close="showModal = false">
-                                <h3 slot="header">เพิ่มยี่ห้อสินค้า</h3>
+                                <h3 slot="header">แก้ไขยี่ห้อสินค้า</h3>
                                 <div slot="body">
                                     <div style="color: #dd0000;">{{nameDuplicate}}</div>
                                     <input v-model="editBrand.name" class="form-control frm-product-category" type="text" name="name" id="name" required="" placeholder="ชื่อยี่ห้อสินค้า">
@@ -84,6 +84,7 @@
                                         <input v-model="editBrand.isactive" type="radio" id="isactive1" name="isactive" value="Y"><label for="isactive1" style="margin-right: 20px;">เปิดใช้งาน</label>
                                         <input v-model="editBrand.isactive" type="radio" id="isactive2" name="isactive" value="N"><label for="isactive2">ปิดใช้งาน</label>
                                     </div>
+                                    <p style="font-size: 12px; color: #dd0000; margin-bottom: 0;">การเปิด หรือ ปิดใช้งานในรายการยี่ห้อนี้ จะทำให้รายการสินค้าทั้งหมดในยี่ห้อนี้ <u>เปลี่ยนแปลง</u> ไปด้วย</p>
                                 </div>
                                 <div slot="footer">
                                     <button class="btn btn-success" @click="brandEdit()"><i class="mdi mdi-content-save"></i> บันทึก</button>
@@ -126,23 +127,28 @@
                                             <tr>
                                                 <th class="text-center" style="width: 10%;">ลำดับ</th>
                                                 <th style="width: 30%;">ชื่อสินค้า</th>
-                                                <th style="width: 30%;">หมวดหมู่</th>
-                                                <th class="text-center" style="width: 15%;">ต้นทุน (฿)</th>
-                                                <th class="text-center" style="width: 15%;">ราคา (฿)</th>
+                                                <th style="width: 25%;">หมวดหมู่</th>
+                                                <th class="text-center" style="width: 10%;">ต้นทุน (฿)</th>
+                                                <th class="text-center" style="width: 10%;">ราคา (฿)</th>
+                                                <th class="text-center" style="width: 15%;">สถานะ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-if='loadingProduct'><td colspan="5" class="text-center"><img src="img/loading_v2.gif"></td></tr>
-                                            <tr v-else-if="products.length == 0" class="text-center"><td colspan="5" class="text-center">NO PRODUCT...</td></tr>
+                                            <tr v-if="loadingProduct"><td colspan="5" class="text-center"><img src="img/loading_v2.gif"></td></tr>
                                             <tr v-else
                                                 v-for="(product, index) in products"
                                                 v-bind:key="product.index"
+                                                class="tr-bottom-line"
                                             >
                                                 <td class="text-center">{{index+1}}</td>
                                                 <td>{{product.name}}</td>
                                                 <td>{{product.category}}</td>
                                                 <td class="text-center">{{product.cost}}</td>
-                                                <td class="text-center">{{product.price}}</td>                             
+                                                <td class="text-center">{{product.price}}</td>
+                                                <td class="text-center td-padding">
+                                                    <p v-if="product.isactive == 'Y'" style="margin-bottom: 0; color: #00dd00;">เปิดใช้งาน</p>
+                                                    <p v-else-if="product.isactive == 'N'" style="margin-bottom: 0; color: #dd0000;">ปิดใช้งาน</p>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>

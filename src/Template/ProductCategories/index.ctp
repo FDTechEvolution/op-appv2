@@ -48,12 +48,11 @@
                                         <div v-if="productCategory.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
                                         <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
                                     </div><br/>
-                                    <strong class="header-org">จำนวนสินค้า :</strong> {{productCategory.total}} <strong class="header-org">ชิ้น</strong>
+                                    <strong class="header-org">จำนวนสินค้า :</strong> {{productCategory.total}} <strong class="header-org">รายการ</strong> <button v-if="productCategory.products != 0" class="a-button" @click="showProducts(productCategory.id,productCategory.name)"><strong><u>ดูรายการสินค้า</u></strong></button><br/>
                                     <hr/>
                                     <div class="row text-center">
-                                        <div class="col-4"><button class="btn btn-info btn-block" type="submit" @click="showProducts(productCategory.id)"><i class="mdi mdi-format-list-bulleted"></i> ดูสินค้า</button></div>
-                                        <div class="col-4"><button class="btn btn-success btn-block" type="submit" @click="showEdit(productCategory.id,productCategory.name,productCategory.description,productCategory.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
-                                        <div class="col-4"><button class="btn btn-warning btn-block" type="submit" @click="delProductCategories(productCategory.id,productCategory.name,productCategory.total)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
+                                        <div class="col-6"><button class="btn btn-success btn-block" type="submit" @click="showEdit(productCategory.id,productCategory.name,productCategory.description,productCategory.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
+                                        <div class="col-6"><button class="btn btn-warning btn-block" type="submit" @click="delProductCategories(productCategory.id,productCategory.name,productCategory.total)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
                                     </div>
                                 </div>
                             </div>
@@ -110,36 +109,42 @@
 
                         <!-- Show Products -->
                         <show-products v-if="showCateProduct" @close="showCateProduct = false">
-                            <h3 slot="header">รายการสินค้าในกลุ่ม</h3>
+                            <h3 slot="header">รายการสินค้าในกลุ่ม {{cateNameInProduct}}</h3>
                             <div slot="body">
                                 <table style="width: 100%;">
                                     <thead style="border-bottom: 1px solid #333; margin-bottom: 10px;">
                                         <tr>
                                             <th class="text-center" style="width: 10%;">ลำดับ</th>
                                             <th style="width: 30%;">ชื่อสินค้า</th>
-                                            <th style="width: 30%;">ยี่ห้อ</th>
-                                            <th class="text-center" style="width: 15%;">ต้นทุน (฿)</th>
-                                            <th class="text-center" style="width: 15%;">ราคา (฿)</th>
+                                            <th style="width: 25%;">ยี่ห้อ</th>
+                                            <th class="text-center" style="width: 10%;">ต้นทุน (฿)</th>
+                                            <th class="text-center" style="width: 10%;">ราคา (฿)</th>
+                                            <th class="text-center" style="width: 15%;">สถานะ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if='loading'><td colspan="5" class="text-center"><img src="img/loading_v2.gif"></td></tr>
+                                        <tr v-if='loadingProduct'><td colspan="5" class="text-center"><img src="img/loading_v2.gif"></td></tr>
                                         <tr v-else-if="products.length == 0" class="text-center"><td colspan="5" class="text-center">NO PRODUCT...</td></tr>
                                         <tr v-else
                                             v-for="(product, index) in products"
                                             v-bind:key="product.index"
+                                            class="tr-bottom-line"
                                         >
                                             <td class="text-center">{{index+1}}</td>
                                             <td>{{product.name}}</td>
-                                            <td>{{product.brand_id}}</td>
+                                            <td>{{product.brand}}</td>
                                             <td class="text-center">{{product.cost}}</td>
-                                            <td class="text-center">{{product.price}}</td>                             
+                                            <td class="text-center">{{product.price}}</td>
+                                            <td class="text-center td-padding">
+                                                <p v-if="product.isactive == 'Y'" style="margin-bottom: 0; color: #00dd00;">เปิดใช้งาน</p>
+                                                <p v-else-if="product.isactive == 'N'" style="margin-bottom: 0; color: #dd0000;">ปิดใช้งาน</p>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div slot="footer">
-                                <button class="btn btn-warning" @click="showCateProduct = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                <button class="btn btn-warning" @click="closeProducts()"><i class="mdi mdi-close-box"></i> ปิด</button>
                             </div>
                         </show-products>
                 </div>

@@ -23,7 +23,9 @@ let productCategory = new Vue ({
             editIsactive: '',
             showCreate: false,
             nameDuplicate: '',
-            showCateProduct: false
+            cateNameInProduct: '',
+            showCateProduct: false,
+            loadingProduct: true
         }
     },
     mounted () {
@@ -116,8 +118,9 @@ let productCategory = new Vue ({
                 }
             }
         },
-        showProducts: function (cateID) {
+        showProducts: function (cateID,cateName) {
             this.showCateProduct = true
+            this.cateNameInProduct = cateName
             axios.get(apiUrl + 'products/all?category=' + cateID)
             .then((response) => {
                 this.products = response.data
@@ -125,7 +128,11 @@ let productCategory = new Vue ({
             .catch (e => {
                 console.log(e)
             })
-            .finally(() => this.loading = false)
+            .finally(() => this.loadingProduct = false)
+        },
+        closeProducts: function () {
+            this.loadingProduct = true
+            this.showCateProduct = false
         }
     }
 })
