@@ -109,7 +109,7 @@
                         <div class="dropdown-divider"></div>
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item">
+                        <a href="<?=SITEURL?>logout" class="dropdown-item notify-item">
                             <i class="remixicon-logout-box-line"></i>
                             <span>ออกจากระบบ</span>
                         </a>

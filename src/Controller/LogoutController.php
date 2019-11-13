@@ -18,7 +18,8 @@ class LogoutController extends AppController {
      * @return \Cake\Http\Response|null
      */
     public function index() {
-        
+        $this->request->getSession()->destroy();
+        return $this->redirect(['controller' => 'login']);
     }
 
 }
