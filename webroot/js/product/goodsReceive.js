@@ -24,7 +24,10 @@ let createline = new Vue ({
                 id: '',
                 bpartner: '',
                 towarehouse: '',
-                status: ''
+                status: '',
+                user: '',
+                date: '',
+                description: ''
             },
             Bpartner: {
                 company: '',
@@ -120,7 +123,7 @@ let createline = new Vue ({
                 user_id: document.getElementById('user').value,
                 description: this.description
             })
-            .then(() => {
+            .then((response) => {
                 this.description = ''
                 this.showCreate = false
                 this.loading = true
@@ -128,6 +131,7 @@ let createline = new Vue ({
                 setTimeout(function () {
                     this.loadShipment();
                 }.bind(this), 0);
+                this.loadShipmentCreate(response.data.msg)
             })
             .catch (e => {
                 console.log(e)
@@ -419,7 +423,7 @@ let createline = new Vue ({
         // shipmentline section
 
         loadShipment: function () {
-            axios.get(apiUrl + 'goods-receive/all/' + localStorage.getItem('ORG'))
+            axios.get(apiUrl + 'goods-receive/all?org=' + localStorage.getItem('ORG'))
             .then((response) => {
                 this.shipments = response.data
             })
@@ -428,12 +432,24 @@ let createline = new Vue ({
             })
             .finally(() => this.loadingShipment = false)
         },
-        shipmentLine: function (id, bpartner, towarehouse, status) {
+        loadShipmentCreate: function (id) {
+            axios.get(apiUrl + 'goods-receive/all?shipment=' + id)
+            .then((response) => {
+                this.shipmentLine(response.data[0].id, response.data[0].company, response.data[0].towarehouse, response.data[0].status, response.data[0].user, response.data[0].date, response.data[0].description)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        shipmentLine: function (id, bpartner, towarehouse, status, user, date, description) {
             this.addProducts = true
             this.shipmentLines.id = id
             this.shipmentLines.bpartner = bpartner
             this.shipmentLines.towarehouse = towarehouse
             this.shipmentLines.status = status
+            this.shipmentLines.user = user
+            this.shipmentLines.date = date
+            this.shipmentLines.description = description
             this.loadingShipmentLine = true
             this.loadShipmentLine()
         },
@@ -511,6 +527,10 @@ let createline = new Vue ({
                         alert("ไม่มีรายการสินค้า ไม่สามารถยืนยันการรับรายการสินค้าได้!")
                     }else{
                         this.addProducts = false
+                        this.loadingShipment = true
+                        setTimeout(function () {
+                            this.loadShipment();
+                        }.bind(this), 0);
                     }
                 })
                 .catch(e => {
@@ -539,34 +559,6 @@ let createline = new Vue ({
     }
 })
 
-
-let users = new Vue ({
-    el: '#users',
-    data () {
-        return {
-            name: '',
-            mobile: '',
-            email: ''
-        }
-    },
-    mounted () {
-        this.loadUser()
-    },
-    methods: {
-        loadUser: function () {
-            axios.get(apiUrl + 'users/get/' + localStorage.getItem('USER_ID'))
-            .then((response) => {
-                this.name = response.data.name,
-                this.mobile = response.data.mobile,
-                this.email = response.data.email,
-                localStorage.setItem('ORG', response.data.org_id)
-            })
-            .catch (e => {
-                console.log(e)
-            })
-        }
-    }
-})
 
 Vue.component('modal', {
     template: `<transition name="modal">

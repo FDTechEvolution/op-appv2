@@ -1,26 +1,6 @@
 <div id="app">
     <div class="row">
-        <div class="col-xl-3 col-lg-4">
-            <div class="text-center card-box">
-                <div id="users" class="member-card">
-                    <div class="">
-                        <h5 class="m-b-5">{{name}}</h5>
-                        <p class="text-muted">Admin</p>
-                    </div>
-
-                    <button type="button" class="btn btn-success btn-sm w-sm waves-effect m-t-10 waves-light"><i class="fa fa-edit"></i> แก้ไข</button>
-                    <button type="button" class="btn btn-danger btn-sm w-sm waves-effect m-t-10 waves-light"><i class="mdi mdi-account-plus"></i> เพิ่ม Admin</button>
-
-                    <div class="text-center m-t-40" style="margin-top: 20px;">
-                        <p style="margin-bottom: 0;" class="text-muted font-13"><strong>Mobile :</strong> <span class="m-l-15">{{mobile}}</span></p>
-                        <p class="text-muted font-13"><strong>Email :</strong> <span class="m-l-15">{{email}}</span></p>
-                    </div>
-
-                    <button type="button" class="btn btn-warning btn-sm w-sm waves-effect m-t-10 waves-light"><i class="mdi mdi-logout"></i> ออกจากระบบ</button>
-                </div>
-            </div> <!-- end card-box -->
-        </div>
-        <div class="col-xl-9 col-lg-8">
+        <div class="col-xl-12 col-lg-12">
             <div class="card-box">
                 <div id="createline">
                     <div class="row">
@@ -97,15 +77,16 @@
                                 <thead style="border-bottom: 1px solid #333; margin-bottom: 10px;">
                                     <tr>
                                         <th class="text-center" style="width: 5%;">#</th>
-                                        <th style="width: 20%;">รายการ</th>
-                                        <th class="text-center" style="width: 10%;">วันที่</th>
-                                        <th class="text-center" style="width: 10%;">สถานะ</th>
-                                        <th class="text-center" style="width: 20%;">การจัดการ</th>
+                                        <th style="width: 30%;">รายการ</th>
+                                        <th class="text-center" style="width: 20%">ผู้ทำรายการ</th>
+                                        <th class="text-center" style="width: 15%;">วันที่</th>
+                                        <th class="text-center" style="width: 15%;">สถานะ</th>
+                                        <th class="text-center" style="width: 15%;">การจัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="show-shipments">
-                                    <tr v-if='loadingShipment'><td colspan="5" class="text-center"><img src="img/loading_v2.gif"></td></tr>
-                                    <tr v-else-if='shipments.length == 0'><td colspan="5" class="text-center"><img src="img/loading_v2.gif"></td></tr>
+                                    <tr v-if='loadingShipment'><td colspan="6" class="text-center"><img src="img/loading_v2.gif"></td></tr>
+                                    <tr v-else-if='shipments.length == 0'><td colspan="6" class="text-center"><img src="img/loading_v2.gif"></td></tr>
                                     <tr v-else
                                         v-for="(shipment, index) in shipments"
                                         v-bind:key="shipment.index"
@@ -113,6 +94,7 @@
                                     >
                                         <td class="text-center">{{index+1}}</td>
                                         <td>{{shipment.company}} <i class="fa fa-arrow-right" style="color: #4fce00;"></i> {{shipment.towarehouse}}</td>
+                                        <td class="text-center">{{shipment.user}}</td>
                                         <td class="text-center">{{shipment.date}}</td>
                                         <td class="text-center">
                                             <span v-if="shipment.status == 'DR'" style="color: #333;">ยังไม่เสร็จ</span>
@@ -120,10 +102,10 @@
                                         </td>
                                         <td class="text-center td-padding">
                                             <div style="display: -webkit-inline-box;" v-if="shipment.status == 'DR'">
-                                                <button class="btn btn-success btn-sm" type="submit" @click="shipmentLine(shipment.id,shipment.company,shipment.towarehouse,shipment.status)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button>
+                                                <button class="btn btn-success btn-sm" type="submit" @click="shipmentLine(shipment.id,shipment.company,shipment.towarehouse,shipment.status,shipment.user,shipment.date,shipment.description)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button>
                                             </div>
                                             <div style="display: -webkit-inline-box;" v-else-if="shipment.status == 'CO'">
-                                                <button class="btn btn-info btn-sm" type="submit" @click="shipmentLine(shipment.id,shipment.company,shipment.towarehouse,shipment.status)"><i class="mdi mdi-lead-pencil"></i> รายละเอียด</button>
+                                                <button class="btn btn-info btn-sm" type="submit" @click="shipmentLine(shipment.id,shipment.company,shipment.towarehouse,shipment.status,shipment.user,shipment.date,shipment.description)"><i class="mdi mdi-lead-pencil"></i> รายละเอียด</button>
                                             </div>
                                             <div style="display: -webkit-inline-box;" v-if="shipment.status == 'DR'">
                                                 <button class="btn btn-warning btn-sm" type="submit" @click="shipmentDel(shipment.id,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button>
@@ -135,8 +117,20 @@
                         </div>
                         <div v-else class="col-12">
                             <div style="display: -webkit-inline-box;">
-                                <h4 style="margin-right: 10px;">แก้ไขรายการรับสินค้า [{{shipmentLines.bpartner}} <i class="fa fa-arrow-right" style="color: #4fce00;"></i> {{shipmentLines.towarehouse}}]</h4>
+                                <h4 style="margin-right: 10px;"><span v-if="shipmentLines.status == 'DR'">แก้ไข</span><span v-else-if="shipmentLines.status == 'CO'">รายละเอียด</span>รายการรับสินค้า [{{shipmentLines.bpartner}} <i class="fa fa-arrow-right" style="color: #4fce00;"></i> {{shipmentLines.towarehouse}}]</h4>
                                 <button v-if="shipmentLines.status == 'DR'" class="btn btn-primary" type="submit" @click="showProductLine = true"> เพิ่มสินค้า</button>
+                            </div>
+                            <hr/>
+                            <div class="row" style="padding: 0 30px;">
+                                <div class="col-4">
+                                    <strong style="color: #000; font-weight: 700;">ผู้ทำรายการ : </strong>{{shipmentLines.user}}<br/>
+                                    <strong style="color: #000; font-weight: 700;">วันที่สร้าง : </strong>{{shipmentLines.date}}
+                                </div>
+                                <div class="col-8">
+                                    <strong style="color: #000; font-weight: 700;">รายละเอียด / หมายเหตุ</strong><br/>
+                                    <span v-if="!shipmentLines.description" style="padding-left:20px;">ไม่มีรายละเอียด.....</span>
+                                    <span v-else style="padding-left:20px;">{{shipmentLines.description}}</span>
+                                </div>
                             </div>
                             <hr/>
                                 <table style="width: 100%;">
