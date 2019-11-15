@@ -28,11 +28,11 @@
                                         <div v-if="productCategory.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
                                         <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
                                     </div><br/>
-                                    <strong class="header-org">จำนวนสินค้า :</strong> {{productCategory.total}} <strong class="header-org">รายการ</strong> <button v-if="productCategory.products != 0" class="a-button" @click="showProducts(productCategory.id,productCategory.name)"><strong><u>ดูรายการสินค้า</u></strong></button><br/>
+                                    <strong class="header-org">จำนวนสินค้า :</strong> {{productCategory.total}} <strong class="header-org">รายการ</strong> <button v-if="productCategory.total != 0" class="a-button" @click="showProducts(productCategory.id,productCategory.name)"><strong><u>ดูรายการสินค้า</u></strong></button><br/>
                                     <hr/>
                                     <div class="row text-center">
                                         <div class="col-6"><button class="btn btn-success btn-block" type="submit" @click="showEdit(productCategory.id,productCategory.name,productCategory.description,productCategory.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
-                                        <div class="col-6"><button class="btn btn-warning btn-block" type="submit" @click="delProductCategories(productCategory.id,productCategory.name,productCategory.total)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
+                                        <div class="col-6"><button class="btn btn-warning btn-block" type="submit" @click="confirmDeleteCategory(productCategory.id,productCategory.name,productCategory.total,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
                                     </div>
                                 </div>
                             </div>
@@ -86,6 +86,34 @@
                                 <button class="btn btn-warning" @click="editProductCategories = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                             </div>
                         </modal>
+
+                        <!-- Delete Category -->
+                        <category-delete v-if="showDelete" @close="showDelete = false">
+                            <h3 slot="header">ลบประเภท/กลุ่มสินค้า {{deleteCategory.name}}</h3>
+                            <div slot="body">
+                                <div v-if="deleteCategory.products != 0" class="row">
+                                    <div class="col-12 text-center"><img src="img/Recycle_Bin.png" width="60"></div><br>
+                                    <div class="col-12 text-center">มีรายการสินค้าอยู่ในประเภท/กลุ่มสินค้านี้จำนวน <strong><u>{{deleteCategory.products}} รายการ</u></strong> กรุณาจัดการสินค้าก่อนลบประเภท/กลุ่มสินค้า</div>
+                                    <div class="col-12 text-center">หรือ</div>
+                                    <div class="col-12 text-center"><input v-model="delAll" type="checkbox"> ลบสินค้าทั้งหมดในประเภท/กลุ่มสินค้า <strong><u>{{deleteCategory.name}}</u></strong> นี้</div>
+                                </div>
+                                <div v-else class="row">
+                                    <div class="col-12 text-center"><img src="img/Recycle_Bin.png" width="60"></div>
+                                    <div class="col-12 text-center" style="color: #dd0000;">ยืนยันการลบประเภท/กลุ่มสินค้านี้?</div>
+                                    <input v-model="delAll" type="text" value="pass" style="display: none;">
+                                </div>
+                            </div>
+                            <div slot="footer">
+                                <div v-if="delAll == ''">
+                                    <button class="btn btn-light"><i class="mdi mdi-content-save" disabled></i> ยืนยัน</button>
+                                    <button class="btn btn-warning" @click="closeDelete()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                </div>
+                                <div v-else>
+                                    <button class="btn btn-success" @click="delProductCategories(deleteCategory.id,deleteCategory.index)"><i class="mdi mdi-content-save"></i> ยืนยัน</button>
+                                    <button class="btn btn-warning" @click="closeDelete()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                                </div>
+                            </div>
+                        </category-delete>
 
                         <!-- Show Products -->
                         <show-products v-if="showCateProduct" @close="showCateProduct = false">

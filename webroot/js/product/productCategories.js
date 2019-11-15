@@ -25,7 +25,15 @@ let productCategory = new Vue ({
             nameDuplicate: '',
             cateNameInProduct: '',
             showCateProduct: false,
-            loadingProduct: true
+            loadingProduct: true,
+            deleteCategory: {
+                id: '',
+                name: '',
+                products: '',
+                index: ''
+            },
+            delAll: '',
+            showDelete: false
         }
     },
     mounted () {
@@ -100,23 +108,30 @@ let productCategory = new Vue ({
                 console.log(e)
             })
         },
-        delProductCategories: function (del, name, total) {
-            if(total != 0){
-                alert("ไม่สามารถลบประเภท/กลุ่มสินค้า : '" + name + "' \nเนื่องจากยังมีสินค้าอยู่ในกลุ่มนี้จำนวน " + total + " ชิ้น กรุณาจัดการก่อนลบกลุ่ม...")
-            }else{
-                if(confirm("ลบประเภท/กลุ่มสินค้า : '" + name + "' ยืนยันการลบ ?")){
-                    axios.post(apiUrl + 'product-categories/delete/' + del)
-                    .then(() => {
-                        setTimeout(function () {
-                            this.loading = true
-                            this.loadProductCategory();
-                        }.bind(this), 0);
-                    })
-                    .catch (e => {
-                        console.log(e)
-                    })
-                }
+        confirmDeleteCategory: function (id, name, products, index) {
+            this.deleteCategory.id = id
+            this.deleteCategory.name = name
+            this.deleteCategory.products = products
+            this.deleteCategory.index = index
+            if(products == 0){
+                this.delAll = true
             }
+            this.showDelete = true
+        },
+        delProductCategories: function (del, index) {
+            axios.post(apiUrl + 'product-categories/delete/' + del)
+            .then(() => {
+                this.showDelete = false
+                this.productCategories.splice(index,1)
+                this.delAll = ''
+            })
+            .catch (e => {
+                console.log(e)
+            })
+        },
+        closeDelete: function () {
+            this.delAll = ''
+            this.showDelete = false
         },
         showProducts: function (cateID,cateName) {
             this.showCateProduct = true
@@ -135,4 +150,27 @@ let productCategory = new Vue ({
             this.showCateProduct = false
         }
     }
+})
+
+Vue.component('category-delete', {
+    template: `<transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header"></slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body"></slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer"></slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>`
 })

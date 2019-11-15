@@ -71,6 +71,8 @@
                                     <button class="btn btn-warning" @click="closeEdit()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                                 </div>
                             </modal>
+
+                            <!-- Delete Brand -->
                             <modal v-if="showDelete" @close="showDelete = false">
                                 <h3 slot="header">ลบยี่ห้อสินค้า {{deleteBrand.name}}</h3>
                                 <div slot="body">
