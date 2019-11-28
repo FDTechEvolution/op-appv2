@@ -237,7 +237,7 @@
                                                 <label>ระดับ <span style="color: #dd0000;">{{errorMsg.level}}</span></label>
                                                 <select id="level" v-bind:class="{nodata : validate.level}" class="form-control frm-product-list">
                                                     <option style="color: #eee;" value="">เลือกระดับคู่ค้า</option>
-                                                    <option value="Dealer">Dealer (ผู้จัดจำหน่าย)</option>
+                                                    <option value="Dealer">Distributor (ตัวแทนจำหน่าย)</option>
                                                     <option value="Vendor">Vendor (ผู้รับสินค้า)</option>
                                                 </select>
                                             </div>

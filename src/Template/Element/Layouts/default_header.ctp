@@ -198,6 +198,27 @@
                             </li>
                         </ul>
                     </li>
+
+
+                    <li class="has-submenu">
+                        <a href="#"> <i class="remixicon-file-copy-2-line"></i>พาร์ทเนอร์/ลูกค้า <div class="arrow-down"></div></a>
+                        <ul class="submenu">
+                            <li>
+                                <ul>
+                                    <li>
+                                        <a href="<?=SITEURL?>bpartner/vendor">Vendor / ........</a>
+                                    </li>
+                                    <li>
+                                        <a href="<?=SITEURL?>bpartner/distributor">Distributor / ตัวแทนจำหน่าย</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Customer / ลูกค้า</a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
                 <!-- End navigation menu -->
 

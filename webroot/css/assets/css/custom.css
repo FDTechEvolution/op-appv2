@@ -71,6 +71,18 @@ td.td-padding {
   background-color: transparent;
   border: none;
 }
+.no-margin {
+  margin: 0;
+}
+.size-12 {
+  font-size: 12px;
+}
+.header-bpartner {
+  color: #333;
+  margin-bottom: 5px;
+  display: inline-block;
+  font-weight: 600;
+}
 
 
 .modal-mask {
