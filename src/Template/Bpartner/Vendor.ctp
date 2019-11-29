@@ -31,7 +31,7 @@
                                                 <div v-if="bpartner.isactive == 'Y'" style="color: #00dd00;">เปิดใช้งาน</div>
                                                 <div v-else style="color: #dd0000;">ปิดใช้งาน</div>
                                             </div><br/>
-                                            <strong class="header-bpartner">ที่อยู่ :</strong> <button class="a-button" @click=""><strong><u>ดูรายการที่อยู่</u></strong></button><br/>
+                                            <strong class="header-bpartner">ที่อยู่ :</strong> <button class="a-button" @click="showModalAddress(bpartner.id,bpartner.company)"><strong><u>ดูรายการที่อยู่</u></strong></button><br/>
                                             <hr/>
                                             <div class="row text-center">
                                                 <div class="col-6"><button class="btn btn-success btn-block" type="submit" @click="showEditBpartner(bpartner.id,bpartner.company,bpartner.name,bpartner.mobile,bpartner.description,bpartner.isactive)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
@@ -130,7 +130,7 @@
                     </create-bpartner>
 
                     <!-- Edit Bpartner -->
-                    <edit-bpartner v-if="showModalEditBpartner" @close="showModalEditBpartner = false">
+                    <modal-bpartner v-if="showModalEditBpartner" @close="showModalEditBpartner = false">
                         <h3 slot="header">เพิ่มรายการ Business Partner</h3>
                         <div slot="body">
                             <div class="row">
@@ -174,10 +174,10 @@
                             <button class="btn btn-success" @click="checkNullEditBpartner()"><i class="mdi mdi-content-save"></i> บันทึก</button>
                             <button class="btn btn-warning" @click="showModalEditBpartner = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
-                    </edit-bpartner>
+                    </modal-bpartner>
 
-                    <!-- Edit Bpartner -->
-                    <del-bpartner v-if="showDeleteBpartner" @close="showDeleteBpartner = false">
+                    <!-- Delete Bpartner -->
+                    <modal-bpartner v-if="showDeleteBpartner" @close="showDeleteBpartner = false">
                         <h3 slot="header">ลบ {{delBpartner.company}}</h3>
                         <div slot="body">
                             <div class="row">
@@ -189,7 +189,130 @@
                             <button class="btn btn-success" @click="bpartnerDelete(delBpartner.id,delBpartner.index)"><i class="mdi mdi-content-save"></i> ยืนยัน</button>
                             <button class="btn btn-warning" @click="showDeleteBpartner = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
-                    </del-bpartner>
+                    </modal-bpartner>
+
+                    <!-- Address Detail -->
+                    <address-detail v-if="showAddress" @close="showAddress = false">
+                        <h3 slot="header">รายการที่อยู่ {{addressCompany}} <button class="btn btn-primary" type="submit" @click="createAddress()"> เพิ่มที่อยู่ Partner </button></h3>
+                        <div slot="body">
+                            <div class="row">
+                                <table class="col-12" style="width: 100%;">
+                                    <tbody>
+                                        <tr v-if="loading.address"><td colspan="5" class="text-center"><img src="../img/loading_v2.gif"></td></tr>
+                                        <tr v-else
+                                            v-for="(address, index) in addresses"
+                                            v-bind:key="address.index"
+                                            class="tr-bottom-line"
+                                        >
+                                            <td class="text-center" style="padding: 10px 0;"><strong style="color: #333; font-weight: 600;">{{index+1}}.</strong></td>
+                                            <td style="width: 70%;">{{address.Addresses.line1}} ต.{{address.Addresses.subdistrict}} อ.{{address.Addresses.district}} จ.{{address.Addresses.province}} {{address.Addresses.zipcode}}</td>
+                                            <td class="text-right">
+                                                <button class="btn btn-success btn-sm" style="margin-right: 6px;" type="submit" @click="showEditAddress(address.Addresses.id,address.Addresses.line1,address.Addresses.subdistrict,address.Addresses.district,address.Addresses.province,address.Addresses.zipcode,address.Addresses.description)"><i class="mdi mdi-lead-pencil"></i> แก้ไข</button></div>
+                                                <button class="btn btn-warning btn-sm" type="submit" @click="delleteAddress(address.Addresses.id,address.Addresses.line1,address.Addresses.subdistrict,address.Addresses.district,address.Addresses.province,address.Addresses.zipcode,index)"><i class="mdi mdi-delete-forever"></i> ลบ</button></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div slot="footer">
+                            <button class="btn btn-warning" @click="closeAddress()"><i class="mdi mdi-close-box"></i> ปิด</button>
+                        </div>
+                    </address-detail>
+
+                    <!-- Create Address -->
+                    <modal-bpartner v-if="showCreateAddress" @close="showCreateAddress = false">
+                        <h3 slot="header">เพิ่มรายการที่อยู่ Partner</h3>
+                        <div slot="body">
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>เลขที่อยู่ <span style="color: #dd0000;">{{errorMsg.line1}}</span></label>
+                                    <input v-model="Address.line1" v-bind:class="{nodata : validate.line1}" class="form-control frm-product-category" type="text" id="bpartner_line1" placeholder="เลขที่ / หมู่บ้าน / อาคาร">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>แขวง / ตำบล <span style="color: #dd0000;">{{errorMsg.subdistrict}}</span></label>
+                                    <input v-model="Address.subdistrict" v-bind:class="{nodata : validate.subdistrict}" class="form-control frm-product-category" type="text" id="bpartner_subdistrict" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>เขต / อำเภอ <span style="color: #dd0000;">{{errorMsg.district}}</span></label>
+                                    <input v-model="Address.district" v-bind:class="{nodata : validate.district}" class="form-control frm-product-category" type="text" id="bpartner_district" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>จังหวัด <span style="color: #dd0000;">{{errorMsg.province}}</span></label>
+                                    <input v-model="Address.province" v-bind:class="{nodata : validate.province}" class="form-control frm-product-category" type="text" id="bpartner_province" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>รหัสไปรษณีย์ <span style="color: #dd0000;">{{errorMsg.zipcode}}</span></label>
+                                    <input v-model="Address.zipcode" v-bind:class="{nodata : validate.zipcode}" class="form-control frm-product-category" type="number" id="bpartner_zipcode" placeholder="ใส่แค่ตัวเลขเท่านั้น">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <label>รายละเอียด</label>
+                                    <textarea v-model="Address.addressDescription" class="form-control frm-product-category" id="bpartner_address_description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div slot="footer">
+                            <button class="btn btn-success" @click="saveCreateAddress()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-warning" @click="closeCreateAddress()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                        </div>
+                    </modal-bpartner>
+
+                    <!-- Edit Address -->
+                    <modal-bpartner v-if="showModalEditAddress" @close="showModalEditAddress = false">
+                        <h3 slot="header">แก้ไขรายการที่อยู่ Partner</h3>
+                        <div slot="body">
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>เลขที่อยู่ <span style="color: #dd0000;">{{errorMsg.line1}}</span></label>
+                                    <input v-model="editAddress.line1" v-bind:class="{nodata : validate.line1}" class="form-control frm-product-category" type="text" id="bpartner_line1" placeholder="เลขที่ / หมู่บ้าน / อาคาร">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>แขวง / ตำบล <span style="color: #dd0000;">{{errorMsg.subdistrict}}</span></label>
+                                    <input v-model="editAddress.subdistrict" v-bind:class="{nodata : validate.subdistrict}" class="form-control frm-product-category" type="text" id="bpartner_subdistrict" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>เขต / อำเภอ <span style="color: #dd0000;">{{errorMsg.district}}</span></label>
+                                    <input v-model="editAddress.district" v-bind:class="{nodata : validate.district}" class="form-control frm-product-category" type="text" id="bpartner_district" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>จังหวัด <span style="color: #dd0000;">{{errorMsg.province}}</span></label>
+                                    <input v-model="editAddress.province" v-bind:class="{nodata : validate.province}" class="form-control frm-product-category" type="text" id="bpartner_province" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-12">
+                                    <label>รหัสไปรษณีย์ <span style="color: #dd0000;">{{errorMsg.zipcode}}</span></label>
+                                    <input v-model="editAddress.zipcode" v-bind:class="{nodata : validate.zipcode}" class="form-control frm-product-category" type="number" id="bpartner_zipcode" placeholder="ใส่แค่ตัวเลขเท่านั้น">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <label>รายละเอียด</label>
+                                    <textarea v-model="editAddress.addressDescription" class="form-control frm-product-category" id="bpartner_address_description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div slot="footer">
+                            <button class="btn btn-success" @click="saveEditAddress(editAddress.id)"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-warning" @click="closeEditAddress()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                        </div>
+                    </modal-bpartner>
                 </div>
             </div>
         </div>

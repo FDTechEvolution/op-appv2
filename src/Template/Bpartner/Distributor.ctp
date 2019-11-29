@@ -176,7 +176,7 @@
                         </div>
                     </edit-bpartner>
 
-                    <!-- Edit Bpartner -->
+                    <!-- Delete Bpartner -->
                     <del-bpartner v-if="showDeleteBpartner" @close="showDeleteBpartner = false">
                         <h3 slot="header">ลบ {{delBpartner.company}}</h3>
                         <div slot="body">

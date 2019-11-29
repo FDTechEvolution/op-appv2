@@ -3,14 +3,21 @@ let bpartner = new Vue ({
     data () {
         return {
             bpartners: [],
+            addresses: [],
             showBpartner: false,
             showModalEditBpartner: false,
             showDeleteBpartner: false,
-            loading: {
-                bpartner: true
-            },
+            showAddress: false,
+            showCreateAddress: false,
+            showModalEditAddress: false,
+            addressCompany: '',
+            bpartnerID: '',
             duplicateMsg: '',
             duplicated: false,
+            loading: {
+                bpartner: true,
+                address: true
+            },
             Bpartner: {
                 company: '',
                 name: '',
@@ -36,6 +43,23 @@ let bpartner = new Vue ({
                 company: '',
                 name: '',
                 index: ''
+            },
+            Address: {
+                line1: '',
+                subdistrict: '',
+                district: '',
+                province: '',
+                zipcode: '',
+                addressDescription: ''
+            },
+            editAddress: {
+                id: '',
+                line1: '',
+                subdistrict: '',
+                district: '',
+                province: '',
+                zipcode: '',
+                addressDescription: ''
             },
             errorMsg: {
                 company: '',
@@ -354,6 +378,98 @@ let bpartner = new Vue ({
             .catch(e => {
                 console.log(e)
             })
+        },
+        
+        // Load Address ///////////////////////////////////////////////////////////////////
+        loadAddress: function (id) {
+            this.bpartnerID = id
+            axios.get(apiUrl + 'bpartners/getaddress/' + id)
+            .then((response) => {
+                this.addresses = response.data
+            })
+            .catch(e => {
+                console.log(e)
+            })
+            .finally(() => this.loading.address = false)
+        },
+        showModalAddress: function (id, company) {
+            this.showAddress = true
+            this.addressCompany = company
+            this.loadAddress(id)
+        },
+        closeAddress: function () {
+            this.showAddress = false
+            this.loading.address = true
+            this.addressCompany = ''
+        },
+        createAddress: function () {
+            this.showCreateAddress = true
+        },
+        closeCreateAddress: function () {
+            this.showCreateAddress = false
+            this.showModalAddress(this.bpartnerID, this.addressCompany)
+        },
+        saveCreateAddress: function () {
+            axios.post(apiUrl + 'bpartners/createaddress', {
+                bpartner_id: this.bpartnerID,
+                line1: this.Address.line1,
+                subdistrict: this.Address.subdistrict,
+                district: this.Address.district,
+                province: this.Address.province,
+                zipcode: this.Address.zipcode
+            })
+            .then(() => {
+                this.showCreateAddress = false
+                this.loading.address = true
+                this.showModalAddress(this.bpartnerID, this.addressCompany)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        showEditAddress: function (id, line1, subdistrict, district, province, zipcode, description) {
+            this.editAddress.id = id
+            this.editAddress.line1 = line1
+            this.editAddress.subdistrict = subdistrict
+            this.editAddress.district = district
+            this.editAddress.province = province
+            this.editAddress.zipcode = zipcode
+            this.editAddress.addressDescription = description
+            this.showModalEditAddress = true
+        },
+        closeEditAddress: function () {
+            this.showModalEditAddress = false
+        },
+        saveEditAddress: function (id) {
+            axios.post(apiUrl + 'bpartners/updateaddress/' + id, {
+                line1: this.editAddress.line1,
+                subdistrict: this.editAddress.subdistrict,
+                district: this.editAddress.district,
+                province: this.editAddress.province,
+                zipcode: this.editAddress.zipcode,
+                description: this.editAddress.addressDescription
+            })
+            .then(() => {
+                this.showModalEditAddress = false
+                this.loading.address = true
+                this.showModalAddress(this.bpartnerID, this.addressCompany)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        delleteAddress: function (id, line1, subdistrict, district, province, zipcode, index) {
+            if(confirm("ยืนยันการลบที่อยู่ " + line1 +" ต."+subdistrict+" อ."+district+" จ."+province+" "+zipcode+" ?")){
+                axios.post(apiUrl + 'bpartners/deleteaddress/' + id)
+                .then(() => {
+                    setTimeout(function () {
+                        this.addresses.splice(index,1)
+                    }.bind(this), 0);
+                })
+                .catch (e => {
+                    console.log(e)
+                })
+            }
         }
     }
 })
@@ -381,11 +497,11 @@ Vue.component('create-bpartner', {
   </transition>`
 })
 
-Vue.component('edit-bpartner', {
+Vue.component('modal-bpartner', {
     template: `<transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
-        <div class="modal-container">
+        <div class="modal-container" style="max-height: 700px; overflow-y: scroll;">
 
           <div class="modal-header">
             <slot name="header"></slot>
@@ -404,11 +520,11 @@ Vue.component('edit-bpartner', {
   </transition>`
 })
 
-Vue.component('del-bpartner', {
+Vue.component('address-detail', {
     template: `<transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
-        <div class="modal-container">
+        <div class="modal-container" style="width: 800px; max-height: 700px; overflow-y: scroll;">
 
           <div class="modal-header">
             <slot name="header"></slot>
