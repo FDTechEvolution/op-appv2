@@ -22,7 +22,7 @@
                                     <div class="card org-card">
                                         <div class="card-body org-body-action">
                                             <h3 class="text-center no-margin">{{bpartner.company}}</h3>
-                                            <p class="text-center size-12 no-margin"><strong class="header-bpartner">ระดับ :</strong> {{bpartner.level}}</p>
+                                            <p class="text-center size-12 no-margin"><strong class="header-bpartner">ระดับ :</strong> <span v-if="bpartner.level == 'Vendor'">Vendor</span> </p>
                                             <hr style="margin: 12px 0;">
                                             <strong class="header-bpartner">ผู้ติดต่อ :</strong> {{bpartner.name}} ({{bpartner.mobile}})<br/>
                                             <strong class="header-bpartner">รายละเอียด :</strong> <span v-if="!bpartner.description"> No Description... </span>{{bpartner.description}}<br/>
@@ -262,7 +262,7 @@
                             </div>
                         </div>
                         <div slot="footer">
-                            <button class="btn btn-success" @click="saveCreateAddress()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-success" @click="chkNullAddress()"><i class="mdi mdi-content-save"></i> บันทึก</button>
                             <button class="btn btn-warning" @click="closeCreateAddress()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
                     </modal-bpartner>
@@ -309,7 +309,7 @@
                             </div>
                         </div>
                         <div slot="footer">
-                            <button class="btn btn-success" @click="saveEditAddress(editAddress.id)"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                            <button class="btn btn-success" @click="chkEditAddress(editAddress.id)"><i class="mdi mdi-content-save"></i> บันทึก</button>
                             <button class="btn btn-warning" @click="closeEditAddress()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
                     </modal-bpartner>

@@ -108,17 +108,17 @@ let bpartner = new Vue ({
 
         // Create Bpartner ////////////////////////////////////////////////////////////////////
         checkNullBpartner: function () {
-            if(this.Bpartner.company == '') {
+            if(!this.Bpartner.company) {
                 this.errorMsg.company = "กรุณาเพิ่มข้อมูลบริษัท"
                 this.validate.company = true
             }
-            else if(this.Bpartner.name == '') {
+            else if(!this.Bpartner.name) {
                 this.errorMsg.name = "กรุณาเพิ่มชื่อผู้ติดต่อ"
                 this.validate.name = true
                 this.errorMsg.company = ""
                 this.validate.company = false
             }
-            else if(this.Bpartner.mobile == '') {
+            else if(!this.Bpartner.mobile) {
                 this.errorMsg.mobile = "กรุณาเพิ่มหมายเลขติดต่อ"
                 this.validate.mobile = true
                 this.errorMsg.company = ""
@@ -126,7 +126,7 @@ let bpartner = new Vue ({
                 this.errorMsg.name = ""
                 this.validate.name = false
             }
-            else if(document.getElementById('level').value == '') {
+            else if(!document.getElementById('level').value) {
                 this.errorMsg.level = "กรุณาเลือกระดับคู่ค้า"
                 this.validate.level = true
                 this.errorMsg.company = ""
@@ -136,7 +136,7 @@ let bpartner = new Vue ({
                 this.errorMsg.mobile = ""
                 this.validate.mobile = false
             }
-            else if(this.Bpartner.line1 == '') {
+            else if(!this.Bpartner.line1) {
                 this.errorMsg.line1 = "กรุณาเพิ่มที่อยู่"
                 this.validate.line1 = true
                 this.errorMsg.company = ""
@@ -148,7 +148,7 @@ let bpartner = new Vue ({
                 this.errorMsg.level = ""
                 this.validate.level = false
             }
-            else if(this.Bpartner.subdistrict == '') {
+            else if(!this.Bpartner.subdistrict) {
                 this.errorMsg.subdistrict = "กรุณาเพิ่มแขวง/ตำบล"
                 this.validate.subdistrict = true
                 this.errorMsg.company = ""
@@ -162,7 +162,7 @@ let bpartner = new Vue ({
                 this.errorMsg.line1 = ""
                 this.validate.line1 = false
             }
-            else if(this.Bpartner.district == '') {
+            else if(!this.Bpartner.district) {
                 this.errorMsg.district = "กรุณาเพิ่มเขต/อำภอ"
                 this.validate.district = true
                 this.errorMsg.company = ""
@@ -178,7 +178,7 @@ let bpartner = new Vue ({
                 this.errorMsg.subdistrict = ""
                 this.validate.subdistrict = false
             }
-            else if(this.Bpartner.province == ''){
+            else if(!this.Bpartner.province){
                 this.errorMsg.province = "กรุณาเพิ่มจังหวัด"
                 this.validate.province = true
                 this.errorMsg.company = ""
@@ -196,8 +196,12 @@ let bpartner = new Vue ({
                 this.errorMsg.district = ""
                 this.validate.district = false
             }
-            else if(this.Bpartner.zipcode == ''){
-                this.errorMsg.zipcode = "กรุณาเพิ่มรหัสไปรษณีย์"
+            else if(!this.Bpartner.zipcode || this.Bpartner.zipcode.length != 5){
+                if(!this.Bpartner.zipcode){
+                    this.errorMsg.zipcode = "กรุณาเพิ่มรหัสไปรษณีย์"
+                }else if(this.Bpartner.zipcode.length != 5){
+                    this.errorMsg.zipcode = "รหัสไปรษณีย์ต้องมี 5 หลัก"
+                }
                 this.validate.zipcode = true
                 this.errorMsg.company = ""
                 this.validate.company = false
@@ -308,17 +312,17 @@ let bpartner = new Vue ({
             this.showModalEditBpartner = true
         },
         checkNullEditBpartner: function () {
-            if(this.editBpartner.company == '') {
+            if(!this.editBpartner.company) {
                 this.errorMsg.company = "กรุณาเพิ่มข้อมูลบริษัท"
                 this.validate.company = true
             }
-            else if(this.editBpartner.name == '') {
+            else if(!this.editBpartner.name) {
                 this.errorMsg.name = "กรุณาเพิ่มชื่อผู้ติดต่อ"
                 this.validate.name = true
                 this.errorMsg.company = ""
                 this.validate.company = false
             }
-            else if(this.editBpartner.mobile == '') {
+            else if(!this.editBpartner.mobile) {
                 this.errorMsg.mobile = "กรุณาเพิ่มหมายเลขติดต่อ"
                 this.validate.mobile = true
                 this.errorMsg.company = ""
@@ -358,6 +362,9 @@ let bpartner = new Vue ({
                         this.loadBpartner();
                     }.bind(this), 0);
                 }
+            })
+            .catch(e => {
+                console.log(e)
             })
         },
 
@@ -407,7 +414,76 @@ let bpartner = new Vue ({
         },
         closeCreateAddress: function () {
             this.showCreateAddress = false
+            this.errorMsg.line1 = ""
+            this.validate.line1 = false
+            this.errorMsg.subdistrict = ""
+            this.validate.subdistrict = false
+            this.errorMsg.district = ""
+            this.validate.district = false
+            this.errorMsg.province = ""
+            this.validate.province = false
+            this.errorMsg.zipcode = ""
+            this.validate.zipcode = false
             this.showModalAddress(this.bpartnerID, this.addressCompany)
+        },
+        chkNullAddress: function () {
+            if(!this.Address.line1) {
+                this.errorMsg.line1 = "กรุณาเพิ่มที่อยู่"
+                this.validate.line1 = true
+            }
+            else if(!this.Address.subdistrict) {
+                this.errorMsg.subdistrict = "กรุณาเพิ่มแขวง/ตำบล"
+                this.validate.subdistrict = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+            }
+            else if(!this.Address.district) {
+                this.errorMsg.district = "กรุณาเพิ่มเขต/อำภอ"
+                this.validate.district = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+            }
+            else if(!this.Address.province){
+                this.errorMsg.province = "กรุณาเพิ่มจังหวัด"
+                this.validate.province = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+                this.errorMsg.district = ""
+                this.validate.district = false
+            }
+            else if(!this.Address.zipcode || this.Address.zipcode.length != 5){
+                if(!this.Address.zipcode){
+                    this.errorMsg.zipcode = "กรุณาเพิ่มรหัสไปรษณีย์"
+                }else if(this.Address.zipcode.length != 5){
+                    this.errorMsg.zipcode = "รหัสไปรษณีย์ต้องมี 5 หลัก"
+                }
+                this.validate.zipcode = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+                this.errorMsg.district = ""
+                this.validate.district = false
+                this.errorMsg.province = ""
+                this.validate.province = false
+            }
+            else {
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+                this.errorMsg.district = ""
+                this.validate.district = false
+                this.errorMsg.province = ""
+                this.validate.province = false
+                this.errorMsg.zipcode = ""
+                this.validate.zipcode = false
+                this.saveCreateAddress()
+            }
         },
         saveCreateAddress: function () {
             axios.post(apiUrl + 'bpartners/createaddress', {
@@ -416,7 +492,8 @@ let bpartner = new Vue ({
                 subdistrict: this.Address.subdistrict,
                 district: this.Address.district,
                 province: this.Address.province,
-                zipcode: this.Address.zipcode
+                zipcode: this.Address.zipcode,
+                description: this.Address.addressDescription
             })
             .then(() => {
                 this.showCreateAddress = false
@@ -439,6 +516,65 @@ let bpartner = new Vue ({
         },
         closeEditAddress: function () {
             this.showModalEditAddress = false
+        },
+        chkEditAddress: function (id) {
+            if(!this.editAddress.line1) {
+                this.errorMsg.line1 = "กรุณาเพิ่มที่อยู่"
+                this.validate.line1 = true
+            }
+            else if(!this.editAddress.subdistrict) {
+                this.errorMsg.subdistrict = "กรุณาเพิ่มแขวง/ตำบล"
+                this.validate.subdistrict = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+            }
+            else if(!this.editAddress.district) {
+                this.errorMsg.district = "กรุณาเพิ่มเขต/อำภอ"
+                this.validate.district = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+            }
+            else if(!this.editAddress.province){
+                this.errorMsg.province = "กรุณาเพิ่มจังหวัด"
+                this.validate.province = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+                this.errorMsg.district = ""
+                this.validate.district = false
+            }
+            else if(!this.editAddress.zipcode || this.editAddress.zipcode.length != 5){
+                if(!this.editAddress.zipcode){
+                    this.errorMsg.zipcode = "กรุณาเพิ่มรหัสไปรษณีย์"
+                }else if(this.editAddress.zipcode.length != 5){
+                    this.errorMsg.zipcode = "รหัสไปรษณีย์ต้องมี 5 หลัก"
+                }
+                this.validate.zipcode = true
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+                this.errorMsg.district = ""
+                this.validate.district = false
+                this.errorMsg.province = ""
+                this.validate.province = false
+            }
+            else {
+                this.errorMsg.line1 = ""
+                this.validate.line1 = false
+                this.errorMsg.subdistrict = ""
+                this.validate.subdistrict = false
+                this.errorMsg.district = ""
+                this.validate.district = false
+                this.errorMsg.province = ""
+                this.validate.province = false
+                this.errorMsg.zipcode = ""
+                this.validate.zipcode = false
+                this.saveEditAddress(id)
+            }
         },
         saveEditAddress: function (id) {
             axios.post(apiUrl + 'bpartners/updateaddress/' + id, {
