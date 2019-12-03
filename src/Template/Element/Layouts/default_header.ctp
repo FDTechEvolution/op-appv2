@@ -212,7 +212,7 @@
                                         <a href="<?=SITEURL?>bpartner/distributor">Distributor / ตัวแทนจำหน่าย</a>
                                     </li>
                                     <li>
-                                        <a href="#">Customer / ลูกค้า</a>
+                                        <a href="<?=SITEURL?>customers">Customer / ลูกค้า</a>
                                     </li>
 
                                 </ul>

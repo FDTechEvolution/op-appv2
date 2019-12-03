@@ -53,19 +53,19 @@
                                     <div class="row" style="margin-bottom: 10px;">
                                         <div class="col-12">
                                             <label>บริษัท <span style="color: #dd0000;">{{errorMsg.company}}</span></label>
-                                            <input v-model="Bpartner.company" v-bind:class="{nodata : validate.company}" class="form-control frm-product-category" type="text" id="bpartner_company" placeholder="ชื่อบริษัทคู่ค้า">
+                                            <input v-model="Bpartner.company" v-bind:class="{nodata : validate.company, duplicate : duplicated}" class="form-control frm-product-category" type="text" id="bpartner_company" placeholder="ชื่อบริษัทคู่ค้า">
                                         </div>
                                     </div>
                                     <div class="row" style="margin-bottom: 10px;">
                                         <div class="col-12">
                                             <label>ชื่อผู้ติดต่อ <span style="color: #dd0000;">{{errorMsg.name}}</span></label>
-                                            <input v-model="Bpartner.name" v-bind:class="{nodata : validate.name}" class="form-control frm-product-category" type="text" id="bpartner_name" placeholder="ชื่อผู้ติดต่อโดยตรง">
+                                            <input v-model="Bpartner.name" v-bind:class="{nodata : validate.name, duplicate : duplicated}" class="form-control frm-product-category" type="text" id="bpartner_name" placeholder="ชื่อผู้ติดต่อโดยตรง">
                                         </div>
                                     </div>
                                     <div class="row" style="margin-bottom: 10px;">
                                         <div class="col-12">
                                             <label>โทรศัพท์ <span style="color: #dd0000;">{{errorMsg.mobile}}</span></label>
-                                            <input v-model="Bpartner.mobile" v-bind:class="{nodata : validate.mobile}" class="form-control frm-product-category" type="number" id="bpartner_mobile" placeholder="ใส่แค่ตัวเลขเท่านั้น">
+                                            <input v-model="Bpartner.mobile" v-bind:class="{nodata : validate.mobile, duplicate : duplicated}" class="form-control frm-product-category" type="number" id="bpartner_mobile" placeholder="ใส่แค่ตัวเลขเท่านั้น">
                                         </div>
                                     </div>
                                     <div class="row" style="margin-bottom: 10px;">
@@ -82,6 +82,7 @@
                                             <textarea v-model="Bpartner.description" class="form-control frm-product-category" id="bpartner_description" rows="6" placeholder="รายละเอียด (ถ้ามี)"></textarea>
                                         </div>
                                     </div>
+                                    <div v-if="duplicated" class="text-center"><span style="color: #dd0000; font-weight: 600;">{{duplicateMsg}}</span></div>
                                 </div>
                                 <div class="col-6">
                                     <div class="row" style="margin-bottom: 10px;">
@@ -131,26 +132,26 @@
 
                     <!-- Edit Bpartner -->
                     <modal-bpartner v-if="showModalEditBpartner" @close="showModalEditBpartner = false">
-                        <h3 slot="header">เพิ่มรายการ Business Partner</h3>
+                        <h3 slot="header">แก้ไขรายการ Business Partner</h3>
                         <div slot="body">
                             <div class="row">
                                 <div class="col-12" style="border-right: 1px solid #ccc;">
                                     <div class="row" style="margin-bottom: 10px;">
                                         <div class="col-12">
                                             <label>บริษัท <span style="color: #dd0000;">{{errorMsg.company}}</span></label>
-                                            <input v-model="editBpartner.company" v-bind:class="{nodata : validate.company}" class="form-control frm-product-category" type="text" id="bpartner_company" placeholder="ชื่อบริษัทคู่ค้า">
+                                            <input v-model="editBpartner.company" v-bind:class="{nodata : validate.company, duplicate : duplicated}" class="form-control frm-product-category" type="text" id="bpartner_company" placeholder="ชื่อบริษัทคู่ค้า">
                                         </div>
                                     </div>
                                     <div class="row" style="margin-bottom: 10px;">
                                         <div class="col-12">
                                             <label>ชื่อผู้ติดต่อ <span style="color: #dd0000;">{{errorMsg.name}}</span></label>
-                                            <input v-model="editBpartner.name" v-bind:class="{nodata : validate.name}" class="form-control frm-product-category" type="text" id="bpartner_name" placeholder="ชื่อผู้ติดต่อโดยตรง">
+                                            <input v-model="editBpartner.name" v-bind:class="{nodata : validate.name, duplicate : duplicated}" class="form-control frm-product-category" type="text" id="bpartner_name" placeholder="ชื่อผู้ติดต่อโดยตรง">
                                         </div>
                                     </div>
                                     <div class="row" style="margin-bottom: 10px;">
                                         <div class="col-12">
                                             <label>โทรศัพท์ <span style="color: #dd0000;">{{errorMsg.mobile}}</span></label>
-                                            <input v-model="editBpartner.mobile" v-bind:class="{nodata : validate.mobile}" class="form-control frm-product-category" type="number" id="bpartner_mobile" placeholder="ใส่แค่ตัวเลขเท่านั้น">
+                                            <input v-model="editBpartner.mobile" v-bind:class="{nodata : validate.mobile, duplicate : duplicated}" class="form-control frm-product-category" type="number" id="bpartner_mobile" placeholder="ใส่แค่ตัวเลขเท่านั้น">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -167,12 +168,13 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div v-if="duplicated" class="text-center"><span style="color: #dd0000; font-weight: 600;">{{duplicateMsg}}</span></div>
                                 </div>
                             </div>
                         </div>
                         <div slot="footer">
                             <button class="btn btn-success" @click="checkNullEditBpartner()"><i class="mdi mdi-content-save"></i> บันทึก</button>
-                            <button class="btn btn-warning" @click="showModalEditBpartner = false"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                            <button class="btn btn-warning" @click="closeEditBpartner()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                         </div>
                     </modal-bpartner>
 

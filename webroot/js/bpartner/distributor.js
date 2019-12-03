@@ -118,8 +118,14 @@ let bpartner = new Vue ({
                 this.errorMsg.company = ""
                 this.validate.company = false
             }
-            else if(!this.Bpartner.mobile) {
-                this.errorMsg.mobile = "กรุณาเพิ่มหมายเลขติดต่อ"
+            else if(!this.Bpartner.mobile || this.Bpartner.mobile.length != 10) {
+                if (!this.Bpartner.mobile) {
+                    this.errorMsg.mobile = 'กรุณาระบบหมายเลขโทรศัพท์'
+                }else if (this.Bpartner.mobile.length < 10) {
+                    this.errorMsg.mobile = 'จำนวนหมายเลขโทรศัพท์มีไม่ครบ 10 หลัก'
+                }else if (this.Bpartner.mobile.length > 10) {
+                    this.errorMsg.mobile = 'จำนวนหมายเลขโทรศัพท์เกิน 10 หลัก'
+                }
                 this.validate.mobile = true
                 this.errorMsg.company = ""
                 this.validate.company = false
@@ -258,11 +264,16 @@ let bpartner = new Vue ({
                 zipcode: this.Bpartner.zipcode,
                 addressDescription: this.Bpartner.addressDescription
             })
-            .then(() => {
-                this.showBpartner = false
-                setTimeout(function () {
-                    this.loadBpartner();
-                }.bind(this), 0);
+            .then((response) => {
+                if (!response.data[0].result) {
+                    this.duplicateMsg = 'ชื่อบริษัท , ผู้ติดต่อ , โทรศัพท์ มีข้อมูลอยู่แล้ว กรุณาตรวจสอบ...'
+                    this.duplicated = true
+                }else{
+                    this.duplicateMsg = ''
+                    this.duplicated = false
+                    this.closeBpartner()
+                    this.loadBpartner()
+                }
             })
             .catch (e => {
                 console.log(e)
@@ -270,6 +281,8 @@ let bpartner = new Vue ({
         },
         closeBpartner: function () {
             this.showBpartner = false
+            this.duplicateMsg = ''
+            this.duplicated = false
             //data
             this.Bpartner.company = ''
             this.Bpartner.name = ''
@@ -311,6 +324,11 @@ let bpartner = new Vue ({
             this.editBpartner.isactive = isactive
             this.showModalEditBpartner = true
         },
+        closeEditBpartner: function () {
+            this.showModalEditBpartner = false
+            this.duplicateMsg = ''
+            this.duplicated = false
+        },
         checkNullEditBpartner: function () {
             if(!this.editBpartner.company) {
                 this.errorMsg.company = "กรุณาเพิ่มข้อมูลบริษัท"
@@ -322,8 +340,14 @@ let bpartner = new Vue ({
                 this.errorMsg.company = ""
                 this.validate.company = false
             }
-            else if(!this.editBpartner.mobile) {
-                this.errorMsg.mobile = "กรุณาเพิ่มหมายเลขติดต่อ"
+            else if(!this.editBpartner.mobile || this.editBpartner.mobile.length != 10) {
+                if (!this.editBpartner.mobile) {
+                    this.errorMsg.mobile = 'กรุณาระบบหมายเลขโทรศัพท์'
+                }else if (this.editBpartner.mobile.length < 10) {
+                    this.errorMsg.mobile = 'จำนวนหมายเลขโทรศัพท์มีไม่ครบ 10 หลัก'
+                }else if (this.editBpartner.mobile.length > 10) {
+                    this.errorMsg.mobile = 'จำนวนหมายเลขโทรศัพท์เกิน 10 หลัก'
+                }
                 this.validate.mobile = true
                 this.errorMsg.company = ""
                 this.validate.company = false
@@ -350,9 +374,8 @@ let bpartner = new Vue ({
                 org_id: localStorage.getItem('ORG')
             })
             .then((response) => {
-                let Checked = response.data.result
-                if(!Checked) {
-                    this.duplicateMsg = "มีการใช้ซ้ำ กรุณาเปลี่ยน..."
+                if (!response.data.result) {
+                    this.duplicateMsg = 'ชื่อบริษัท , ผู้ติดต่อ , โทรศัพท์ มีข้อมูลอยู่แล้ว กรุณาตรวจสอบ...'
                     this.duplicated = true
                 }else{
                     this.duplicateMsg = ''
@@ -421,6 +444,13 @@ let bpartner = new Vue ({
             this.validate.province = false
             this.errorMsg.zipcode = ""
             this.validate.zipcode = false
+            //
+            this.Address.line1 = ''
+            this.Address.subdistrict = ''
+            this.Address.district = ''
+            this.Address.province = ''
+            this.Address.zipcode = ''
+            this.Address.description = ''
             this.showModalAddress(this.bpartnerID, this.addressCompany)
         },
         chkNullAddress: function () {

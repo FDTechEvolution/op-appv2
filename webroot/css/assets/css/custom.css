@@ -83,6 +83,12 @@ td.td-padding {
   display: inline-block;
   font-weight: 600;
 }
+.nodata {
+  border-color: #dd0000;
+}
+.duplicate {
+  border-color: #dd0000;
+}
 
 
 .modal-mask {
