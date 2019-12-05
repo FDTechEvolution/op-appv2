@@ -410,7 +410,7 @@ let createline = new Vue ({
             })
         },
         loadUser: function () {
-            axios.get(apiUrl + 'users/all?org=' + localStorage.getItem('ORG'))
+            axios.get(apiUrl + 'users/all?org=' + localStorage.getItem('ORG') + '&active=yes')
             .then((response) => {
                 this.users = response.data
                 this.userlogin = localStorage.getItem('USER_ID')
@@ -548,7 +548,7 @@ let createline = new Vue ({
             })
         },
         loadProduct: function () {
-            axios.get(apiUrl + 'products/all?org=' + localStorage.getItem('ORG'))
+            axios.get(apiUrl + 'products/all?org=' + localStorage.getItem('ORG') + '&active=yes')
             .then((response) => {
                 this.products = response.data
             })

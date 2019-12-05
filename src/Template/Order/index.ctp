@@ -51,28 +51,27 @@
                                     <thead style="border-bottom: 1px solid #333; margin-bottom: 10px;">
                                         <tr>
                                             <th style="width: 70%;">รายการ</th>
-                                            <th class="text-center" style="width: 20%;">ผู้ส่ง</th>
-                                            <th></th>
+                                            <th class="text-center" style="width: 10%">วันที่</th>
+                                            <th class="text-center" style="width: 20%;">การจัดการ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if='loading'><td colspan="3" class="text-center"><i class="fa-li fa fa-spinner fa-spin"></i> Loading...</td></tr>
-                                        <tr v-else-if='orders.length == 0'><td colspan="3" class="text-center">NO DATA...</td></tr>
+                                        <tr v-if='loading'><td colspan="2" class="text-center"><img src="img/loading_v2.gif"></td></tr>
+                                        <tr v-else-if='rawOrders.length == 0'><td colspan="2" class="text-center">NO DATA...</td></tr>
                                         <tr v-else
-                                            v-for="(order, index) in filteredList"
+                                            v-for="(rawOrder, index) in filteredList"
                                             class="tr-order"
                                         >
-                                            <td class="td-order">
-                                                {{index+1}}. {{order.order_lines}} ราคา {{order.totalamt}} บาท ({{order.payment_method}}) | 
-                                                {{order.customer}} - {{order.line1}} ต.{{order.subdistrict}} อ.{{order.district}} จ.{{order.province}} {{order.zipcode}}
-                                            </td>
-                                            <td class="text-center">{{order.user}}</td>
-                                            <td class="text-center"><button type="button" class="btn btn-success btn-sm">บันทึก</button>&nbsp;<button type="button" class="btn btn-warning btn-sm">ยกเลิก</button></td>
+                                            <td class="td-order">{{index+1}}. {{rawOrder.data}}</td>
+                                            <td class="text-center">{{rawOrder.created}}</td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-success btn-sm" @click="showConfirmRawOrder(rawOrder.data)">ยืนยันออเดอร์</button>&nbsp;
+                                                <button type="button" class="btn btn-warning btn-sm">ยกเลิก</button></td>
                                         </tr>
                                     </tbody>
                                     <paginate
                                         v-model="page"
-                                        :page-count="orders.length"
+                                        :page-count="rawOrders.length"
                                         :page-range="1"
                                         :click-handler="clickCallback"
                                         :prev-text="'Prev'"
@@ -83,6 +82,103 @@
                                 </table>
                             </div>
                         </div>
+
+                        <!-- Conform RawOrder -->
+                        <confirm-raworder v-if="confirmRawOrder" @close="confirmRawOrder = false">
+                            <div slot="header" class="raw-order-data">
+                                <div class="row">
+                                    <div class="col-12">{{rawOrderData}}</div>
+                                </div>
+                            </div>
+                            <div slot="body">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <label>โทร</label>
+                                        <input v-model="raworder.mobile" v-bind:class="" class="form-control frm-product-category" type="number" id="" placeholder="">
+                                    </div>
+                                    <div class="col-4">
+                                        <label>ชื่อ</label>
+                                        <input v-model="raworder.name" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                    </div>
+                                    <div class="col-6">
+                                        <label>ที่อยู่/บ้านเลขที่/ตึก/ซอย</label>
+                                        <input v-model="raworder.line1" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label>แขวง/ตำบล</label>
+                                        <input v-model="raworder.subdistrict" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>เขต/อำเภอ</label>
+                                        <input v-model="raworder.district" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>จังหวัด</label>
+                                        <input v-model="raworder.province" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>รหัสไปรษณีย์</label>
+                                        <input v-model="raworder.zipcode" v-bind:class="" class="form-control frm-product-category" type="number" id="" placeholder="">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <label>พนักงานขาย</label>
+                                        <select id="user" class="form-control">
+                                            <option
+                                                v-for="(user, index) in users"
+                                                v-bind:key="user.index"
+                                                v-bind:value="user.id">{{user.name}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-2">
+                                        <label>ส่งโดย</label>
+                                        <input v-model="raworder.shipping" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                    </div>
+                                    <div class="col-6">
+                                        <label>รายละเอียด/โน๊ต</label>
+                                        <input v-model="raworder.description" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                    </div>
+                                    <div class="col-2">
+                                        <label>วิธีชำระเงิน</label>
+                                        <div class="radio radio-info form-check-inline" style="margin-top: 7px;">
+                                            <input v-model="raworder.payment" type="radio" id="payment1" name="payment" value="COD"><label for="payment1" style="margin-right: 20px;">COD</label>
+                                            <input v-model="raworder.payment" type="radio" id="payment2" name="payment" value="TRF"><label for="payment2">โอน</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row" style="margin-bottom: 20px;">
+                                    <div class="col-2"><button class="btn btn-success btn-rounded btn-block" type="submit" @click="cloneProduct()"> เพิ่มสินค้า </button></div>
+                                </div>
+                                <div class="row" id="productList">
+                                    <div class="col-8">
+                                        <select id="products" v-on:change="inPriceProduct($event)" class="form-control frm-product-list">
+                                            <option style="color: #ddd;" value="">เลือกสินค้า</option>
+                                            <option
+                                                v-for="(product, index) in products"
+                                                v-bind:key="product.index"
+                                                v-bind:value="product.id">{{product.name}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-2">
+                                        <input v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="จำนวน">
+                                    </div>
+                                    <div class="col-2">
+                                        <input v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="ราคา">
+                                    </div>
+                                </div>
+                                <div id="productListLast"></div>
+                            </div>
+                            <div slot="footer">
+                                <button class="btn btn-success" @click="chkNullCustomer()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                                <button class="btn btn-warning" @click="closeConfirmRawOrder()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
+                            </div>
+                        </confirm-raworder>
                     </div>
                     <div class="tab-pane fade" id="confirmorder">
                         <div class="card m-b-20">

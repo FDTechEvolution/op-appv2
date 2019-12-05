@@ -4,32 +4,87 @@ let raworder = new Vue({
     el: '#raworder',
     data () {
         return {
-            orders: [],
+            rawOrders: [],
+            users: [],
+            products: [],
             search: '',
             loading: true,
-            page: 1
+            rawOrderData: '',
+            confirmRawOrder: false,
+            page: 1,
+            raworder: {
+                mobile: '',
+                name: '',
+                line1: '',
+                subdistrict: '',
+                district: '',
+                province: '',
+                zipcode: '',
+                user: '',
+                shipping: '',
+                description: '',
+                payment: ''
+            }
         }
+    },
+    mounted () {
+        this.loadRawOrder()
+        this.loadUser()
+        this.loadProduct()
     },
     methods: {
         clickCallback: function(pageNum) {
             console.log(pageNum)
+        },
+        loadRawOrder: function () {
+            axios.get(apiUrl + 'raw-orders/all?org=' + localStorage.getItem('ORG'))
+            .then((response) => {
+                this.rawOrders = response.data
+            })
+            .catch((e) => {
+                console.error(e)
+            })
+            .finally(() => this.loading = false)
+        },
+        showConfirmRawOrder: function (data) {
+            this.rawOrderData = data
+            this.confirmRawOrder = true
+        },
+        closeConfirmRawOrder: function () {
+            this.rawOrderData = ''
+            this.confirmRawOrder = false
+        },
+        loadUser: function () {
+            axios.get(apiUrl + 'users/all?org=' + localStorage.getItem('ORG') + '&active=yes')
+            .then((response) => {
+                this.users = response.data
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        loadProduct: function () {
+            axios.get(apiUrl + 'products/all?org=' + localStorage.getItem('ORG') + '&active=yes')
+            .then((response) => {
+                this.products = response.data
+            })
+            .catch (e => {
+                console.log(e)
+            })
+        },
+        cloneProduct: function () {
+            let boxes = document.getElementById("productList");
+            let clone = boxes.cloneNode(true);
+            document.getElementById("productListLast").appendChild(clone);
+        },
+        inPriceProduct: function(value) {
+            console.log(value.target.value)
         }
-    },
-    mounted () {
-        axios
-        .get(apiUrl + 'orders/get-order/DX')
-        .then((response) => {
-            this.orders = response.data
-        })
-        .catch((e) => {
-            console.error(e)
-        })
-        .finally(() => this.loading = false)
     },
     computed: {
         filteredList() {
-            return this.orders.filter(order => {
-                return order.customer.toLowerCase().includes(this.search.toLowerCase())
+            return this.rawOrders.filter(rawOrder => {
+                return rawOrder.data.toLowerCase().includes(this.search.toLowerCase())
             })
         },
         sortedCats:function() {
@@ -196,4 +251,27 @@ let sentedorder = new Vue({
             })
         }
     }
+})
+
+Vue.component('confirm-raworder', {
+    template: `<transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container" style="width: 70%; max-height: 700px; overflow-y: scroll;">
+
+          <div class="modal-header">
+            <slot name="header"></slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body"></slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer"></slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>`
 })

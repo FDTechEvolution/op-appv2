@@ -89,6 +89,13 @@ td.td-padding {
 .duplicate {
   border-color: #dd0000;
 }
+.raw-order-data {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
 
 
 .modal-mask {
