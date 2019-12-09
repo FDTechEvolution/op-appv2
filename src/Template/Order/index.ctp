@@ -56,8 +56,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if='loading'><td colspan="2" class="text-center"><img src="img/loading_v2.gif"></td></tr>
-                                        <tr v-else-if='rawOrders.length == 0'><td colspan="2" class="text-center">NO DATA...</td></tr>
+                                        <tr v-if='loading'><td colspan="3" class="text-center"><img src="img/loading_v2.gif"></td></tr>
+                                        <tr v-else-if='rawOrders.length == 0'><td colspan="3" class="text-center">NO DATA...</td></tr>
                                         <tr v-else
                                             v-for="(rawOrder, index) in filteredList"
                                             class="tr-order"
@@ -94,14 +94,14 @@
                                 <div class="row">
                                     <div class="col-2">
                                         <label>โทร</label>
-                                        <input v-model="raworder.mobile" v-bind:class="" class="form-control frm-product-category" type="number" id="" placeholder="">
+                                        <input v-model="raworder.mobile" v-bind:class="" v-on:change="chkCustomerByMobile()" class="form-control frm-product-category" type="number" id="" placeholder="">
                                     </div>
                                     <div class="col-4">
                                         <label>ชื่อ</label>
                                         <input v-model="raworder.name" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
                                     </div>
                                     <div class="col-6">
-                                        <label>ที่อยู่/บ้านเลขที่/ตึก/ซอย</label>
+                                        <label>ที่อยู่/บ้านเลขที่/ตึก/ซอย <span v-if="changeAddress">[<button class="a-button" @click="showAddress = true"><strong style="color: blue;"><u>เปลี่ยนที่อยู่</u></strong></button>]</span></label>
                                         <input v-model="raworder.line1" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
                                     </div>
                                 </div>
@@ -154,9 +154,9 @@
                                 <div class="row" style="margin-bottom: 20px;">
                                     <div class="col-2"><button class="btn btn-success btn-rounded btn-block" type="submit" @click="cloneProduct()"> เพิ่มสินค้า </button></div>
                                 </div>
-                                <div class="row" id="productList">
-                                    <div class="col-8">
-                                        <select id="products" v-on:change="inPriceProduct($event)" class="form-control frm-product-list">
+                                <div class="row" v-for="(productSelect, index) in productSelected" id="productList">
+                                    <div class="col-7">
+                                        <select id="products" v-model="productSelect.product" v-on:change="inPriceProduct(index)" class="form-control frm-product-list">
                                             <option style="color: #ddd;" value="">เลือกสินค้า</option>
                                             <option
                                                 v-for="(product, index) in products"
@@ -166,19 +166,41 @@
                                         </select>
                                     </div>
                                     <div class="col-2">
-                                        <input v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="จำนวน">
+                                        <input v-model="productSelect.qty" v-bind:class="" v-on:change="inPriceProduct(index)" class="form-control frm-product-category" type="number" id="" placeholder="จำนวน">
                                     </div>
                                     <div class="col-2">
-                                        <input v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="ราคา">
+                                        <input v-model="productSelect.price" v-bind:class="" class="form-control frm-product-category" type="number" id="" placeholder="ราคา" readonly>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <button class="btn btn-icon waves-effect waves-light btn-warning m-b-5" @click="cloneProductDelete(index)" title="ลบรายการสินค้า"> <i class="mdi mdi-close"></i> </button>
                                     </div>
                                 </div>
-                                <div id="productListLast"></div>
                             </div>
                             <div slot="footer">
-                                <button class="btn btn-success" @click="chkNullCustomer()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                                <button class="btn btn-success" @click=""><i class="mdi mdi-content-save"></i> บันทึก</button>
                                 <button class="btn btn-warning" @click="closeConfirmRawOrder()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                             </div>
                         </confirm-raworder>
+
+                        <!-- Show Address -->
+                        <show-address v-if="showAddress" @close="showAddress = false">
+                            <div slot="body">
+                                <table style="width: 100%;">
+                                    <tbody>
+                                        <tr v-for="(address, index) in addresses"
+                                            class="tr-order"
+                                        >
+                                            <td class="td-order">{{index+1}}. {{address.Addresses.line1}} ต.{{address.Addresses.subdistrict}} อ.{{address.Addresses.district}} จ.{{address.Addresses.province}} {{address.Addresses.zipcode}}</td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-success btn-sm" @click="selectedAddress(address.Addresses.line1,address.Addresses.subdistrict,address.Addresses.district,address.Addresses.province,address.Addresses.zipcode)">เลือก</button>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div slot="footer">
+                                <button class="btn btn-warning" @click="showAddress = false"><i class="mdi mdi-close-box"></i> ปิด</button>
+                            </div>
+                        </show-address>
                     </div>
                     <div class="tab-pane fade" id="confirmorder">
                         <div class="card m-b-20">

@@ -7,10 +7,14 @@ let raworder = new Vue({
             rawOrders: [],
             users: [],
             products: [],
+            customers: [],
+            addresses: [],
             search: '',
             loading: true,
             rawOrderData: '',
             confirmRawOrder: false,
+            showAddress: false,
+            changeAddress: false,
             page: 1,
             raworder: {
                 mobile: '',
@@ -24,13 +28,19 @@ let raworder = new Vue({
                 shipping: '',
                 description: '',
                 payment: ''
-            }
+            },
+            productSelected: [{
+                product: '',
+                qty: '',
+                price: ''
+            }]
         }
     },
     mounted () {
         this.loadRawOrder()
         this.loadUser()
         this.loadProduct()
+        this.loadCustomer()
     },
     methods: {
         clickCallback: function(pageNum) {
@@ -52,7 +62,29 @@ let raworder = new Vue({
         },
         closeConfirmRawOrder: function () {
             this.rawOrderData = ''
+            this.productSelected = [{
+                product: '',
+                qty: '',
+                price: ''
+            }]
+            this.raworder.name = ''
+            this.raworder.mobile = ''
+            this.raworder.line1 = ''
+            this.raworder.subdistrict = ''
+            this.raworder.district = ''
+            this.raworder.province = ''
+            this.raworder.zipcode = ''
+            this.changeAddress = false
             this.confirmRawOrder = false
+        },
+        loadCustomer: function () {
+            axios.get(apiUrl + 'customers/all?org=' + localStorage.getItem('ORG') + '&active=yes')
+            .then((response) => {
+                this.customers = response.data
+            })
+            .catch(e => {
+                console.log(e)
+            })
         },
         loadUser: function () {
             axios.get(apiUrl + 'users/all?org=' + localStorage.getItem('ORG') + '&active=yes')
@@ -73,12 +105,75 @@ let raworder = new Vue({
             })
         },
         cloneProduct: function () {
-            let boxes = document.getElementById("productList");
-            let clone = boxes.cloneNode(true);
-            document.getElementById("productListLast").appendChild(clone);
+            this.productSelected.push({ product: '' , qty: '', price: ''});
         },
-        inPriceProduct: function(value) {
-            console.log(value.target.value)
+        cloneProductDelete: function (index) {
+            this.productSelected.splice(index,1)
+        },
+        inPriceProduct: function (index) {
+            let prices = this.products.filter(product => {
+                return product.id.includes(this.productSelected[index].product)
+            })
+            if(!this.productSelected[index].qty){
+                this.productSelected[index].price = prices[0].price
+            }else{
+                this.productSelected[index].price = (this.productSelected[index].qty * prices[0].price)
+            }
+        },
+        chkCustomerByMobile: function () {
+            if(this.raworder.mobile){
+                let customerData = this.customers.filter(customer => {
+                    return customer.mobile.includes(this.raworder.mobile)
+                })
+                if(customerData){
+                    this.raworder.name = customerData[0].name
+                    this.loadAddress(customerData[0].id)
+                }else{
+                    this.raworder.name = ''
+                    this.raworder.line1 = ''
+                    this.raworder.subdistrict = ''
+                    this.raworder.district = ''
+                    this.raworder.province = ''
+                    this.raworder.zipcode = ''
+                    this.changeAddress = false
+                }
+            }else{
+                this.raworder.name = ''
+                this.raworder.line1 = ''
+                this.raworder.subdistrict = ''
+                this.raworder.district = ''
+                this.raworder.province = ''
+                this.raworder.zipcode = ''
+                this.changeAddress = false
+            }
+            
+        },
+        loadAddress: function (id) {
+            axios.get(apiUrl + 'customers/get-address/' + id)
+            .then((response) => {
+                if(response.data.length > 1){
+                    this.showAddress = true
+                    this.addresses = response.data
+                }else{
+                    this.raworder.line1 = response.data[0].Addresses.line1
+                    this.raworder.subdistrict = response.data[0].Addresses.subdistrict
+                    this.raworder.district = response.data[0].Addresses.district
+                    this.raworder.province = response.data[0].Addresses.province
+                    this.raworder.zipcode = response.data[0].Addresses.zipcode
+                }
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        selectedAddress: function (line1, subdistrict, district, province, zipcode) {
+            this.raworder.line1 = line1
+            this.raworder.subdistrict = subdistrict
+            this.raworder.district = district
+            this.raworder.province = province
+            this.raworder.zipcode = zipcode
+            this.showAddress = false
+            this.changeAddress = true
         }
     },
     computed: {
@@ -258,6 +353,29 @@ Vue.component('confirm-raworder', {
     <div class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container" style="width: 70%; max-height: 700px; overflow-y: scroll;">
+
+          <div class="modal-header">
+            <slot name="header"></slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body"></slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer"></slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>`
+})
+
+Vue.component('show-address', {
+    template: `<transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container" style="width: 80%; max-height: 700px; overflow-y: scroll;">
 
           <div class="modal-header">
             <slot name="header"></slot>
