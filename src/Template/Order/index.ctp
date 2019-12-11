@@ -44,7 +44,7 @@
                                 <div class="search-wrapper row">
                                     <div class="col-md-8"></div>
                                     <div class="col-md-4">
-                                        <input type="text" v-model="search" placeholder="ค้นหาชื่อลูกค้า..." class="search-orders"/>
+                                        <input type="text" v-model="search" placeholder="ค้นหารายการลูกค้า..." class="search-orders"/>
                                     </div>
                                 </div>
                                 <table style="width: 100%;">
@@ -65,7 +65,7 @@
                                             <td class="td-order">{{index+1}}. {{rawOrder.data}}</td>
                                             <td class="text-center">{{rawOrder.created}}</td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-success btn-sm" @click="showConfirmRawOrder(rawOrder.data)">ยืนยันออเดอร์</button>&nbsp;
+                                                <button type="button" class="btn btn-success btn-sm" @click="showConfirmRawOrder(rawOrder.id, rawOrder.data, index)">ยืนยันออเดอร์</button>&nbsp;
                                                 <button type="button" class="btn btn-warning btn-sm">ยกเลิก</button></td>
                                         </tr>
                                     </tbody>
@@ -89,6 +89,9 @@
                                 <div class="row">
                                     <div class="col-12">{{rawOrderData}}</div>
                                 </div>
+                                <div v-if="noMobileInData" class="row" style="margin-top: 10px;">
+                                    <div class="col-12 text-center" style="color: #dd0000;">ไม่มีรายละเอียดลูกค้าตามหมายเลขโทรศัพท์ที่ระบุ กรุณาเพิ่มรายละเอียดลูกค้าด้วยตนเอง...</div>
+                                </div>
                             </div>
                             <div slot="body">
                                 <div class="row">
@@ -98,29 +101,30 @@
                                     </div>
                                     <div class="col-4">
                                         <label>ชื่อ</label>
-                                        <input v-model="raworder.name" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                        <input v-model="raworder.name" v-bind:class="{setmobile : setMobile}" class="form-control frm-product-category" type="text" id="" placeholder="">
                                     </div>
                                     <div class="col-6">
                                         <label>ที่อยู่/บ้านเลขที่/ตึก/ซอย <span v-if="changeAddress">[<button class="a-button" @click="showAddress = true"><strong style="color: blue;"><u>เปลี่ยนที่อยู่</u></strong></button>]</span></label>
-                                        <input v-model="raworder.line1" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                        <input v-model="raworder.line1" v-bind:class="{setmobile : setMobile}" class="form-control frm-product-category" type="text" id="" placeholder="">
                                     </div>
                                 </div>
+                                <span v-if="mobileLength" style="color: #dd0000;">กรุณาระบุหมายเลขโทรศัพท์ให้มากกว่า 7 หลัก เพื่อความแม่นยำในการค้นหา</span>
                                 <div class="row">
                                     <div class="col-3">
                                         <label>แขวง/ตำบล</label>
-                                        <input v-model="raworder.subdistrict" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                        <input v-model="raworder.subdistrict" v-bind:class="{setmobile : setMobile}" class="form-control frm-product-category" type="text" id="" placeholder="">
                                     </div>
                                     <div class="col-3">
                                         <label>เขต/อำเภอ</label>
-                                        <input v-model="raworder.district" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                        <input v-model="raworder.district" v-bind:class="{setmobile : setMobile}" class="form-control frm-product-category" type="text" id="" placeholder="">
                                     </div>
                                     <div class="col-3">
                                         <label>จังหวัด</label>
-                                        <input v-model="raworder.province" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                        <input v-model="raworder.province" v-bind:class="{setmobile : setMobile}" class="form-control frm-product-category" type="text" id="" placeholder="">
                                     </div>
                                     <div class="col-3">
                                         <label>รหัสไปรษณีย์</label>
-                                        <input v-model="raworder.zipcode" v-bind:class="" class="form-control frm-product-category" type="number" id="" placeholder="">
+                                        <input v-model="raworder.zipcode" v-bind:class="{setmobile : setMobile}" class="form-control frm-product-category" type="number" id="" placeholder="">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -136,7 +140,11 @@
                                     </div>
                                     <div class="col-2">
                                         <label>ส่งโดย</label>
-                                        <input v-model="raworder.shipping" v-bind:class="" class="form-control frm-product-category" type="text" id="" placeholder="">
+                                        <select v-model="raworder.shipping" class="form-control">
+                                            <option value="" style="color: #ddd;">เลือก...</option>
+                                            <option value="kerry">Kerry</option>
+                                            <option value="ไปรษณีย์">ไปรษณีย์</option>
+                                        </select>
                                     </div>
                                     <div class="col-6">
                                         <label>รายละเอียด/โน๊ต</label>
@@ -175,9 +183,14 @@
                                         <button class="btn btn-icon waves-effect waves-light btn-warning m-b-5" @click="cloneProductDelete(index)" title="ลบรายการสินค้า"> <i class="mdi mdi-close"></i> </button>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-9 text-right">ราคารวม : </div>
+                                    <div class="col-2 text-center">{{total}}</div>
+                                    <div class="col-1">บาท</div>
+                                </div>
                             </div>
                             <div slot="footer">
-                                <button class="btn btn-success" @click=""><i class="mdi mdi-content-save"></i> บันทึก</button>
+                                <button class="btn btn-success" @click="saveRawOrder()"><i class="mdi mdi-content-save"></i> บันทึก</button>
                                 <button class="btn btn-warning" @click="closeConfirmRawOrder()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                             </div>
                         </confirm-raworder>
@@ -192,7 +205,7 @@
                                         >
                                             <td class="td-order">{{index+1}}. {{address.Addresses.line1}} ต.{{address.Addresses.subdistrict}} อ.{{address.Addresses.district}} จ.{{address.Addresses.province}} {{address.Addresses.zipcode}}</td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-success btn-sm" @click="selectedAddress(address.Addresses.line1,address.Addresses.subdistrict,address.Addresses.district,address.Addresses.province,address.Addresses.zipcode)">เลือก</button>
+                                                <button type="button" class="btn btn-success btn-sm" @click="selectedAddress(address.Addresses.id,address.Addresses.line1,address.Addresses.subdistrict,address.Addresses.district,address.Addresses.province,address.Addresses.zipcode)">เลือก</button>
                                         </tr>
                                     </tbody>
                                 </table>

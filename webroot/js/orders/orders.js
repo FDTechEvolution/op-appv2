@@ -15,10 +15,17 @@ let raworder = new Vue({
             confirmRawOrder: false,
             showAddress: false,
             changeAddress: false,
+            noMobileInData: false,
+            mobileLength: false,
+            setMobile: true,
             page: 1,
             raworder: {
+                id: '',
+                index: '',
+                cus_id: '',
                 mobile: '',
                 name: '',
+                address_id: '',
                 line1: '',
                 subdistrict: '',
                 district: '',
@@ -47,7 +54,7 @@ let raworder = new Vue({
             console.log(pageNum)
         },
         loadRawOrder: function () {
-            axios.get(apiUrl + 'raw-orders/all?org=' + localStorage.getItem('ORG'))
+            axios.get(apiUrl + 'raw-orders/all?org=' + localStorage.getItem('ORG') + '&status=DR')
             .then((response) => {
                 this.rawOrders = response.data
             })
@@ -56,8 +63,10 @@ let raworder = new Vue({
             })
             .finally(() => this.loading = false)
         },
-        showConfirmRawOrder: function (data) {
+        showConfirmRawOrder: function (id, data, index) {
+            this.raworder.id = id
             this.rawOrderData = data
+            this.raworder.index = index
             this.confirmRawOrder = true
         },
         closeConfirmRawOrder: function () {
@@ -74,8 +83,15 @@ let raworder = new Vue({
             this.raworder.district = ''
             this.raworder.province = ''
             this.raworder.zipcode = ''
+            this.raworder.user = ''
+            this.raworder.shipping = ''
+            this.raworder.description = ''
+            this.raworder.payment = ''
             this.changeAddress = false
             this.confirmRawOrder = false
+            this.mobileLength = false
+            this.noMobileInData = false
+            this.setMobile = true
         },
         loadCustomer: function () {
             axios.get(apiUrl + 'customers/all?org=' + localStorage.getItem('ORG') + '&active=yes')
@@ -116,26 +132,37 @@ let raworder = new Vue({
             })
             if(!this.productSelected[index].qty){
                 this.productSelected[index].price = prices[0].price
+                this.productSelected[index].qty = 1
             }else{
                 this.productSelected[index].price = (this.productSelected[index].qty * prices[0].price)
             }
         },
         chkCustomerByMobile: function () {
             if(this.raworder.mobile){
-                let customerData = this.customers.filter(customer => {
-                    return customer.mobile.includes(this.raworder.mobile)
-                })
-                if(customerData){
-                    this.raworder.name = customerData[0].name
-                    this.loadAddress(customerData[0].id)
+                if(this.raworder.mobile.length < 7){
+                    this.mobileLength = true
                 }else{
-                    this.raworder.name = ''
-                    this.raworder.line1 = ''
-                    this.raworder.subdistrict = ''
-                    this.raworder.district = ''
-                    this.raworder.province = ''
-                    this.raworder.zipcode = ''
-                    this.changeAddress = false
+                    let customerData = this.customers.filter(customer => {
+                        return customer.mobile.includes(this.raworder.mobile)
+                    })
+                    if(customerData.length != 0){
+                        this.raworder.cus_id = customerData[0].id
+                        this.raworder.name = customerData[0].name
+                        this.raworder.mobile = customerData[0].mobile
+                        this.mobileLength = false
+                        this.setMobile = false
+                        this.loadAddress(customerData[0].id)
+                    }else{
+                        this.raworder.name = ''
+                        this.raworder.line1 = ''
+                        this.raworder.subdistrict = ''
+                        this.raworder.district = ''
+                        this.raworder.province = ''
+                        this.raworder.zipcode = ''
+                        this.changeAddress = false
+                        this.noMobileInData = true
+                        this.setMobile = false
+                    }
                 }
             }else{
                 this.raworder.name = ''
@@ -145,6 +172,7 @@ let raworder = new Vue({
                 this.raworder.province = ''
                 this.raworder.zipcode = ''
                 this.changeAddress = false
+                this.setMobile = true
             }
             
         },
@@ -155,6 +183,7 @@ let raworder = new Vue({
                     this.showAddress = true
                     this.addresses = response.data
                 }else{
+                    this.raworder.address_id = response.data[0].Addresses.id
                     this.raworder.line1 = response.data[0].Addresses.line1
                     this.raworder.subdistrict = response.data[0].Addresses.subdistrict
                     this.raworder.district = response.data[0].Addresses.district
@@ -166,7 +195,8 @@ let raworder = new Vue({
                 console.log(e)
             })
         },
-        selectedAddress: function (line1, subdistrict, district, province, zipcode) {
+        selectedAddress: function (id, line1, subdistrict, district, province, zipcode) {
+            this.raworder.address_id = id
             this.raworder.line1 = line1
             this.raworder.subdistrict = subdistrict
             this.raworder.district = district
@@ -174,6 +204,43 @@ let raworder = new Vue({
             this.raworder.zipcode = zipcode
             this.showAddress = false
             this.changeAddress = true
+        },
+        saveRawOrder: function () {
+            axios.post(apiUrl + 'orders/create/', {
+                org_id: localStorage.getItem('ORG'),
+                customer_id: this.raworder.cus_id,
+                user_id: document.getElementById('user').value,
+                payment_method: 'ปลายทาง',
+                status: 'CO',
+                description: this.raworder.description,
+                totalamt: this.total,
+                shipping: this.raworder.shipping,
+                raw_order_id: this.raworder.id
+            })
+            .then((response) => {
+                this.saveOrderLine(response.data[0].msg)
+                this.setConfirmRawOrder(this.raworder.id, this.raworder.index)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        saveOrderLine: function (id) {
+            axios.post(apiUrl + 'order-lines/create/' + id, {
+                org_id: localStorage.getItem('ORG'),
+                order_id: id,
+                products: this.productSelected
+            })
+        },
+        setConfirmRawOrder: function (id, index) {
+            axios.post(apiUrl + 'raw-orders/confirm-order/' + id)
+            .then(() => {
+                this.closeConfirmRawOrder()
+                this.rawOrders.splice(index,1)
+            })
+            .catch(e => {
+                console.log(e)
+            })
         }
     },
     computed: {
@@ -194,6 +261,11 @@ let raworder = new Vue({
                 let end = this.currentPage*this.pageSize;
                 if(index >= start && index < end) return true;
             });
+        },
+        total: function () {
+            return this.productSelected.reduce(function(total, product){
+                return total + product.price
+            },0)
         }
     }
 })

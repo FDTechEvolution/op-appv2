@@ -96,6 +96,10 @@ td.td-padding {
   border-radius: 5px;
   width: 100%;
 }
+.setmobile {
+  pointer-events: none;
+  background-color: #f3f3f3;
+}
 
 
 .modal-mask {
