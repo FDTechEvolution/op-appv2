@@ -92,6 +92,9 @@
                                 <div v-if="noMobileInData" class="row" style="margin-top: 10px;">
                                     <div class="col-12 text-center" style="color: #dd0000;">ไม่มีรายละเอียดลูกค้าตามหมายเลขโทรศัพท์ที่ระบุ กรุณาเพิ่มรายละเอียดลูกค้าด้วยตนเอง...</div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-12">{{testContent}}</div>
+                                </div>
                             </div>
                             <div slot="body">
                                 <div class="row">

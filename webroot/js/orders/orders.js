@@ -40,7 +40,8 @@ let raworder = new Vue({
                 product: '',
                 qty: '',
                 price: ''
-            }]
+            }],
+            testContent: ''
         }
     },
     mounted () {
@@ -68,6 +69,15 @@ let raworder = new Vue({
             this.rawOrderData = data
             this.raworder.index = index
             this.confirmRawOrder = true
+            let exlopded = data.split(" ")
+            //console.log(exlopded)
+            exlopded.forEach(ex => {
+                if(!isNaN(ex) && ex.length > 8) {
+                    this.raworder.mobile = ex
+                    this.chkCustomerByMobile('yes')
+                }
+            });
+            
         },
         closeConfirmRawOrder: function () {
             this.rawOrderData = ''
@@ -137,44 +147,67 @@ let raworder = new Vue({
                 this.productSelected[index].price = (this.productSelected[index].qty * prices[0].price)
             }
         },
-        chkCustomerByMobile: function () {
-            if(this.raworder.mobile){
-                if(this.raworder.mobile.length < 7){
-                    this.mobileLength = true
+        chkCustomerByMobile: function (auto) {
+            if(auto == 'yes') {
+                let customerData = this.customers.filter(customer => {
+                    return customer.mobile.includes(this.raworder.mobile)
+                })
+                if(customerData.length != 0){
+                    this.raworder.cus_id = customerData[0].id
+                    this.raworder.name = customerData[0].name
+                    this.raworder.mobile = customerData[0].mobile
+                    this.mobileLength = false
+                    this.setMobile = false
+                    this.loadAddress(customerData[0].id)
                 }else{
-                    let customerData = this.customers.filter(customer => {
-                        return customer.mobile.includes(this.raworder.mobile)
-                    })
-                    if(customerData.length != 0){
-                        this.raworder.cus_id = customerData[0].id
-                        this.raworder.name = customerData[0].name
-                        this.raworder.mobile = customerData[0].mobile
-                        this.mobileLength = false
-                        this.setMobile = false
-                        this.loadAddress(customerData[0].id)
-                    }else{
-                        this.raworder.name = ''
-                        this.raworder.line1 = ''
-                        this.raworder.subdistrict = ''
-                        this.raworder.district = ''
-                        this.raworder.province = ''
-                        this.raworder.zipcode = ''
-                        this.changeAddress = false
-                        this.noMobileInData = true
-                        this.setMobile = false
-                    }
+                    this.raworder.name = ''
+                    this.raworder.line1 = ''
+                    this.raworder.subdistrict = ''
+                    this.raworder.district = ''
+                    this.raworder.province = ''
+                    this.raworder.zipcode = ''
+                    this.changeAddress = false
+                    this.noMobileInData = true
+                    this.setMobile = false
                 }
             }else{
-                this.raworder.name = ''
-                this.raworder.line1 = ''
-                this.raworder.subdistrict = ''
-                this.raworder.district = ''
-                this.raworder.province = ''
-                this.raworder.zipcode = ''
-                this.changeAddress = false
-                this.setMobile = true
+                if(this.raworder.mobile){
+                    if(this.raworder.mobile.length < 7){
+                        this.mobileLength = true
+                    }else{
+                        let customerData = this.customers.filter(customer => {
+                            return customer.mobile.includes(this.raworder.mobile)
+                        })
+                        if(customerData.length != 0){
+                            this.raworder.cus_id = customerData[0].id
+                            this.raworder.name = customerData[0].name
+                            this.raworder.mobile = customerData[0].mobile
+                            this.mobileLength = false
+                            this.setMobile = false
+                            this.loadAddress(customerData[0].id)
+                        }else{
+                            this.raworder.name = ''
+                            this.raworder.line1 = ''
+                            this.raworder.subdistrict = ''
+                            this.raworder.district = ''
+                            this.raworder.province = ''
+                            this.raworder.zipcode = ''
+                            this.changeAddress = false
+                            this.noMobileInData = true
+                            this.setMobile = false
+                        }
+                    }
+                }else{
+                    this.raworder.name = ''
+                    this.raworder.line1 = ''
+                    this.raworder.subdistrict = ''
+                    this.raworder.district = ''
+                    this.raworder.province = ''
+                    this.raworder.zipcode = ''
+                    this.changeAddress = false
+                    this.setMobile = true
+                }
             }
-            
         },
         loadAddress: function (id) {
             axios.get(apiUrl + 'customers/get-address/' + id)
@@ -211,14 +244,13 @@ let raworder = new Vue({
                 customer_id: this.raworder.cus_id,
                 user_id: document.getElementById('user').value,
                 payment_method: 'ปลายทาง',
-                status: 'CO',
                 description: this.raworder.description,
                 totalamt: this.total,
                 shipping: this.raworder.shipping,
                 raw_order_id: this.raworder.id
             })
             .then((response) => {
-                this.saveOrderLine(response.data[0].msg)
+                this.saveOrderLine(response.data.msg)
                 this.setConfirmRawOrder(this.raworder.id, this.raworder.index)
             })
             .catch(e => {
@@ -228,14 +260,18 @@ let raworder = new Vue({
         saveOrderLine: function (id) {
             axios.post(apiUrl + 'order-lines/create/' + id, {
                 org_id: localStorage.getItem('ORG'),
-                order_id: id,
                 products: this.productSelected
+            })
+            .then(() => {
+                this.closeConfirmRawOrder()
+            })
+            .catch(e => {
+                console.log(e)
             })
         },
         setConfirmRawOrder: function (id, index) {
             axios.post(apiUrl + 'raw-orders/confirm-order/' + id)
             .then(() => {
-                this.closeConfirmRawOrder()
                 this.rawOrders.splice(index,1)
             })
             .catch(e => {
