@@ -77,7 +77,6 @@ let raworder = new Vue({
                     this.chkCustomerByMobile('yes')
                 }
             });
-            
         },
         closeConfirmRawOrder: function () {
             this.rawOrderData = ''
@@ -169,6 +168,7 @@ let raworder = new Vue({
                     this.changeAddress = false
                     this.noMobileInData = true
                     this.setMobile = false
+                    this.filterAddressInput()
                 }
             }else{
                 if(this.raworder.mobile){
@@ -222,11 +222,99 @@ let raworder = new Vue({
                     this.raworder.district = response.data[0].Addresses.district
                     this.raworder.province = response.data[0].Addresses.province
                     this.raworder.zipcode = response.data[0].Addresses.zipcode
+                    // this.chkAddressInput(response.data[0].Addresses.line1,
+                    //                     response.data[0].Addresses.subdistrict,
+                    //                     response.data[0].Addresses.district,
+                    //                     response.data[0].Addresses.province,
+                    //                     response.data[0].Addresses.zipcode)
                 }
             })
             .catch(e => {
                 console.log(e)
             })
+        },
+        chkAddressInput: function (line1, subdistrict, district, province, zipcode) {
+            let exlopded = this.rawOrderData.split(" ")
+            exlopded.forEach(ex => {
+                if(ex == 'เลขที่'+this.raworder.line1 || ex == this.raworder.line1) {
+                    this.raworder.line1 = line1
+                    console.log(ex)
+                }
+                if(ex == 'ต.'+this.raworder.subdistrict || ex == this.raworder.subdistrict) {
+                    this.raworder.subdistrict = subdistrict
+                    console.log(ex)
+                }
+                if(ex == 'อ.'+this.raworder.district || ex == this.raworder.district) {
+                    this.raworder.district = district
+                    console.log(ex)
+                }
+                if(ex == 'จ.'+this.raworder.province || ex == this.raworder.province) {
+                    this.raworder.province = province
+                    console.log(ex)
+                }
+                if(ex == this.raworder.zipcode || ex == this.raworder.zipcode) {
+                    this.raworder.zipcode = zipcode
+                    console.log(ex)
+                }
+            });
+        },
+        filterAddressInput: function () {
+            let exlopded = this.rawOrderData.split(" ")
+            let exploded = ''
+            let subdistrictEX = 'ต.'
+            let districtEX = 'อ.'
+            let provinceEX = 'จ.'
+            
+            if(subdistrictEX){
+                exploded = exlopded.filter(ex => {
+                    return ex.toLowerCase().includes(subdistrictEX.toLowerCase())
+                })
+                if(exploded.length != 0){
+                    let subex = exploded[0].split(".")
+                    this.raworder.subdistrict = subex[1]
+                }else{
+                    this.raworder.subdistrict = ''
+                }
+            }
+            if(districtEX){
+                exploded = exlopded.filter(ex => {
+                    return ex.toLowerCase().includes(districtEX.toLowerCase())
+                })
+                if(exploded.length != 0){
+                    let distex = exploded[0].split(".")
+                    this.raworder.district = distex[1]
+                }else{
+                    this.raworder.district = ''
+                }
+            }
+            if(provinceEX){
+                exploded = exlopded.filter(ex => {
+                    return ex.toLowerCase().includes(provinceEX.toLowerCase())
+                })
+                if(exploded.length != 0){
+                    let provex = exploded[0].split(".")
+                    this.raworder.province = provex[1]
+                }else{
+                    this.raworder.province = ''
+                }
+            }
+            exlopded.forEach(ex => {
+                if(!isNaN(ex) && ex.length == 5) {
+                    this.raworder.zipcode = ex
+                }else{
+                    this.raworder.zipcode = ''
+                }
+
+                if(ex == 'ปลายทาง') {
+                    this.raworder.payment = 'COD'
+                }else if(ex == 'โอน') {
+                    this.raworder.payment = 'โอน'
+                }else {
+                    this.raworder.payment = ''
+                }
+                console.log(this.raworder.payment)
+            });
+            
         },
         selectedAddress: function (id, line1, subdistrict, district, province, zipcode) {
             this.raworder.address_id = id
@@ -238,6 +326,13 @@ let raworder = new Vue({
             this.showAddress = false
             this.changeAddress = true
         },
+        chkSaveOrder: function () {
+            if(this.noMobileInData) {
+                this.saveNewCustomer()
+            }else{
+                this.saveRawOrder()
+            }
+        },
         saveRawOrder: function () {
             axios.post(apiUrl + 'orders/create/', {
                 org_id: localStorage.getItem('ORG'),
@@ -247,11 +342,33 @@ let raworder = new Vue({
                 description: this.raworder.description,
                 totalamt: this.total,
                 shipping: this.raworder.shipping,
-                raw_order_id: this.raworder.id
+                raw_order_id: this.raworder.id,
+                address_id: this.raworder.address_id
             })
             .then((response) => {
                 this.saveOrderLine(response.data.msg)
                 this.setConfirmRawOrder(this.raworder.id, this.raworder.index)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        saveNewCustomer: function () {
+            axios.post(apiUrl + 'customers/create', {
+                org_id: localStorage.getItem('ORG'),
+                name: this.raworder.name,
+                mobile: this.raworder.mobile,
+                line1: this.raworder.line1,
+                subdistrict: this.raworder.subdistrict,
+                district: this.raworder.district,
+                province: this.raworder.province,
+                zipcode: this.raworder.zipcode,
+                addressDescription: ''
+            })
+            .then((response) => {
+                this.raworder.cus_id = response.data[2].customer
+                this.raworder.address_id = response.data[2].address
+                this.saveRawOrder()
             })
             .catch(e => {
                 console.log(e)
@@ -273,6 +390,7 @@ let raworder = new Vue({
             axios.post(apiUrl + 'raw-orders/confirm-order/' + id)
             .then(() => {
                 this.rawOrders.splice(index,1)
+                this.loadRawOrder()
             })
             .catch(e => {
                 console.log(e)

@@ -156,8 +156,8 @@
                                     <div class="col-2">
                                         <label>วิธีชำระเงิน</label>
                                         <div class="radio radio-info form-check-inline" style="margin-top: 7px;">
-                                            <input v-model="raworder.payment" type="radio" id="payment1" name="payment" value="COD"><label for="payment1" style="margin-right: 20px;">COD</label>
-                                            <input v-model="raworder.payment" type="radio" id="payment2" name="payment" value="TRF"><label for="payment2">โอน</label>
+                                            <input v-model="raworder.payment" type="radio" id="payment1" name="payment" v-bind:value="COD" :checked="raworder.payment == 'COD'"><label for="payment1" style="margin-right: 20px;">COD</label>
+                                            <input v-model="raworder.payment" type="radio" id="payment2" name="payment" v-bind:value="โอน" :checked="raworder.payment == 'โอน'"><label for="payment2">โอน</label>
                                         </div>
                                     </div>
                                 </div>
@@ -193,7 +193,7 @@
                                 </div>
                             </div>
                             <div slot="footer">
-                                <button class="btn btn-success" @click="saveRawOrder()"><i class="mdi mdi-content-save"></i> บันทึก</button>
+                                <button class="btn btn-success" @click="chkSaveOrder()"><i class="mdi mdi-content-save"></i> บันทึก</button>
                                 <button class="btn btn-warning" @click="closeConfirmRawOrder()"><i class="mdi mdi-close-box"></i> ยกเลิก</button>
                             </div>
                         </confirm-raworder>
